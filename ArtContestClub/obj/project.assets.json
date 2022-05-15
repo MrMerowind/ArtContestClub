@@ -2272,11 +2272,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\ArtContestClub\\ArtContestClub\\ArtContestClub\\ArtContestClub.csproj",
+      "projectUniqueName": "D:\\ArtContestClubGit\\ArtContestClub\\ArtContestClub.csproj",
       "projectName": "ArtContestClub",
-      "projectPath": "D:\\ArtContestClub\\ArtContestClub\\ArtContestClub\\ArtContestClub.csproj",
+      "projectPath": "D:\\ArtContestClubGit\\ArtContestClub\\ArtContestClub.csproj",
       "packagesPath": "C:\\Users\\Mero\\.nuget\\packages\\",
-      "outputPath": "D:\\ArtContestClub\\ArtContestClub\\ArtContestClub\\obj\\",
+      "outputPath": "D:\\ArtContestClubGit\\ArtContestClub\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

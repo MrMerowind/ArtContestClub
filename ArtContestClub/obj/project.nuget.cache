@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "R49/UtOAf3EJfjUhQTydBnJuhsjrOzWsm2Nirobo+L4sHDdUeqQKeMak3m1CtPymOZSdnCjFPq2jkxdCc2U4dg==",
+  "dgSpecHash": "pXLTfGtRy9MjrFV/SJ2hDZGWOhKhJUTUbO1ojNxShjp+qP5CK+pkYWAyUQduJHQcljHHCmwPZCfmzp2MEkI5wQ==",
   "success": true,
-  "projectFilePath": "D:\\ArtContestClub\\ArtContestClub\\ArtContestClub\\ArtContestClub.csproj",
+  "projectFilePath": "D:\\ArtContestClubGit\\ArtContestClub\\ArtContestClub.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Mero\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\Mero\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\6.0.5\\microsoft.aspnetcore.cryptography.internal.6.0.5.nupkg.sha512",

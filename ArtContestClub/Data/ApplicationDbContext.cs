@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using ArtContestClub.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtContestClub.Data
@@ -9,5 +10,10 @@ namespace ArtContestClub.Data
             : base(options)
         {
         }
+        DbSet<Contest> Contests { get; set; }
+        DbSet<ContestComment> ContestComments { get; set; }
+        DbSet<ContestParticipant> ContestParticipants { get; set; }
+        DbSet<ContestSubmission> ContestSubmissions { get; set; }
+        DbSet<SubmissionComment> SubmissionComments { get; set; }
     }
 }
