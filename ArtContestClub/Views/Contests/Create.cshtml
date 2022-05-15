@@ -1,0 +1,70 @@
+﻿@model ArtContestClub.Models.Contest
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create contest</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create" class="form-floating">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">Title</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-outline">
+              <label class="form-label" asp-for="Description">Description</label>
+              <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+              <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-check">
+                <label asp-for="IsNsfw" class="control-label">NSFW</label>
+                <input asp-for="IsNsfw" class="form-check-input" type="checkbox" value=""/>
+                <span asp-validation-for="IsNsfw" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxParticipants" class="control-label">Participants limit</label>
+                <select asp-for="MaxParticipants" class="form-select">
+                  <option value="1"selected>10</option>
+                  <option value="2">25</option>
+                  <option value="3">50</option>
+                  <option value="4">100</option>
+                  <option value="5">250</option>
+                  <option value="6">500</option>
+                  <option value="7">1000</option>
+                  <option value="8">Unlimited</option>
+                </select>
+                <span asp-validation-for="MaxParticipants" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Deadline" class="control-label"></label>
+                <input asp-for="Deadline" class="form-control" />
+                <span asp-validation-for="Deadline" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Branch" class="control-label"></label>
+                <select class="form-select form-select-sm" asp-for="Branch">
+                  <option value="DigitalDrawing" selected>Digital drawing</option>
+                  <option value="DigitalPainting">Digital painting</option>
+                  <option value="TraditionalDrawing">Traditional drawing</option>
+                  <option value="TraditionalPainting">Traditional painting</option>
+                  <option value="Photography">Photography</option>
+                  <option value="3D">3D</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span asp-validation-for="Branch" class="text-danger"></span>
+            </div>
+            <br/>
+            <div class="form-group">
+                <input type="submit" value="Create contest" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

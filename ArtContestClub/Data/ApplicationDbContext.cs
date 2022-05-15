@@ -10,10 +10,10 @@ namespace ArtContestClub.Data
             : base(options)
         {
         }
-        DbSet<Contest> Contests { get; set; }
-        DbSet<ContestComment> ContestComments { get; set; }
-        DbSet<ContestParticipant> ContestParticipants { get; set; }
-        DbSet<ContestSubmission> ContestSubmissions { get; set; }
-        DbSet<SubmissionComment> SubmissionComments { get; set; }
+        public DbSet<Contest> Contests { get; set; }
+        public DbSet<ContestComment> ContestComments { get; set; }
+        public DbSet<ContestParticipant> ContestParticipants { get; set; }
+        public DbSet<ContestSubmission> ContestSubmissions { get; set; }
+        public DbSet<SubmissionComment> SubmissionComments { get; set; }
     }
 }

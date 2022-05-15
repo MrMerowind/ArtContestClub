@@ -6,10 +6,11 @@ namespace ArtContestClub.Models
     {
         public int Id { get; set; }
         public string? OwnerEmail { get; set; }
+        public string? Title { get; set; }
         public string? Description { get; set; }
-        public bool? IsNsfw { get; set; }
-        public bool? IsDeleted { get; set; }
-        public bool? IsBanned { get; set; }
+        public bool IsNsfw { get; set; } = false;
+        public bool IsDeleted { get; set; } = false;
+        public bool IsBanned { get; set; } = false;
         public string? SkillLevel { get; set; }
         public int? MaxParticipants { get; set; }
         public int? CurrentParticipants { get; set; }

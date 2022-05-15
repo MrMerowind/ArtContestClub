@@ -48,13 +48,13 @@ namespace ArtContestClub.Data.Migrations
                     b.Property<string>("FirstPlaceUserEmail")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsBanned")
+                    b.Property<bool>("IsBanned")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsDeleted")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsNsfw")
+                    b.Property<bool>("IsNsfw")
                         .HasColumnType("bit");
 
                     b.Property<int?>("MaxParticipants")
@@ -70,6 +70,9 @@ namespace ArtContestClub.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ThirdPlaceUserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
