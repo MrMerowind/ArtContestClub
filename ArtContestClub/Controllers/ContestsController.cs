@@ -202,6 +202,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
+            return NotFound();
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
@@ -223,6 +224,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerEmail,Title,Description,IsNsfw,IsDeleted,IsBanned,SkillLevel,MaxParticipants,CurrentParticipants,FirstPlaceUserEmail,SecondPlaceUserEmail,ThirdPlaceUserEmail,Created,Deadline,Branch")] Contest contest)
         {
+            return NotFound();
             if (id != contest.Id)
             {
                 return NotFound();

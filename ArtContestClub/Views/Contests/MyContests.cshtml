@@ -38,7 +38,6 @@
     <tbody>
 @foreach (var item in Model) {
             if (item.IsDeleted) continue;
-            if (item.IsBanned) continue;
             if (item.OwnerEmail != User.Identity.Name) continue;
             <tr>
             
@@ -70,7 +69,7 @@
                 <a class="link-success" asp-action="Details" asp-route-id="@item.Id">View</a>
                 @if(User.Identity.Name == item.OwnerEmail)
                 {
-                    <a class="link-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <!--<a class="link-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>-->
                     <a class="link-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 }
             </td>
