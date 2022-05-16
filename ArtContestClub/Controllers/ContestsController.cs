@@ -59,11 +59,127 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Create([Bind("Id,OwnerEmail,Title,Description,IsNsfw,IsDeleted,IsBanned,SkillLevel,MaxParticipants,CurrentParticipants,FirstPlaceUserEmail,SecondPlaceUserEmail,ThirdPlaceUserEmail,Created,Deadline,Branch")] Contest contest)
         {
+            string? email = User.Identity.Name;
+            if(email == null) return View(contest);
+            else contest.OwnerEmail = email;
+
+            if(contest.Title == "" || contest.Title == null
+                || contest.Description == "" || contest.Description == null)
+            {
+                View(contest);
+            }
+
+            switch (contest.SkillLevel)
+            {
+                case "1":
+                    contest.SkillLevel = "Newbie";
+                    break;
+                case "2":
+                    contest.SkillLevel = "Beginner";
+                    break;
+                case "3":
+                    contest.SkillLevel = "Medium";
+                    break;
+                case "4":
+                    contest.SkillLevel = "Skilled";
+                    break;
+                case "5":
+                    contest.SkillLevel = "Professional";
+                    break;
+                case "6":
+                    contest.SkillLevel = "Art God";
+                    break;
+                case "7":
+                    contest.SkillLevel = "All";
+                    break;
+                default:
+                    return View(contest);
+            }
+
+            switch (contest.MaxParticipants)
+            {
+                case 10:
+                    break;
+                case 25:
+                    break;
+                case 50:
+                    if(!(User.IsInRole("Premium") ||
+                        User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 100:
+                    if (!(User.IsInRole("Premium") ||
+                        User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 250:
+                    if (!(User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 500:
+                    if (!(User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 1000:
+                    if (!(User.IsInRole("Admin")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                default:
+                    return View(contest);
+            }
+
+            if(contest.Deadline <= DateTime.Now)
+            {
+                return View(contest);
+            }
+
+            switch (contest.Branch)
+            {
+                case "1":
+                    contest.Branch = "Digital drawing";
+                    break;
+                case "2":
+                    contest.Branch = "Digital painting";
+                    break;
+                case "3":
+                    contest.Branch = "Traditional drawing";
+                    break;
+                case "4":
+                    contest.Branch = "Traditional painting";
+                    break;
+                case "5":
+                    contest.Branch = "Photography";
+                    break;
+                case "6":
+                    contest.Branch = "3D";
+                    break;
+                case "7":
+                    contest.Branch = "Other";
+                    break;
+                default:
+                    return View(contest);
+            }
+
             contest.ThirdPlaceUserEmail = null;
             contest.SecondPlaceUserEmail = null;
             contest.FirstPlaceUserEmail = null;
             contest.CurrentParticipants = 0;
             contest.Created = DateTime.Now;
+
             contest.IsBanned = false;
             contest.IsDeleted = false;
             if (ModelState.IsValid)

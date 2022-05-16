@@ -13,19 +13,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.OwnerEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsNsfw)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsDeleted)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsBanned)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SkillLevel)
@@ -35,15 +26,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CurrentParticipants)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstPlaceUserEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecondPlaceUserEmail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ThirdPlaceUserEmail)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Created)
@@ -59,21 +41,14 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
+        if (item.IsDeleted) continue;
+        if (item.IsBanned) continue;
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.OwnerEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsNsfw)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsBanned)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SkillLevel)
@@ -83,15 +58,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CurrentParticipants)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstPlaceUserEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondPlaceUserEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ThirdPlaceUserEmail)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Created)
