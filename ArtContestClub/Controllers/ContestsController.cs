@@ -21,9 +21,16 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Contests
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            return View(await _context.Contests.ToListAsync());
+            if (page == null || page < 0) page = 0;
+            return View(await _context.Contests.Where(p => p.IsBanned == false && p.IsDeleted == false)
+                .OrderBy(p => p.Id).Skip((int)page * 100).Take(100).ToListAsync());
+        }
+
+        public async Task<IActionResult> MyContests()
+        {
+            return View(await _context.Contests.Where(p => p.OwnerEmail == User.Identity.Name && p.IsDeleted == false).ToListAsync());
         }
 
         // GET: Contests/Details/5
@@ -214,13 +221,120 @@ namespace ArtContestClub.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerEmail,Description,IsNsfw,IsDeleted,IsBanned,SkillLevel,MaxParticipants,CurrentParticipants,FirstPlaceUserEmail,SecondPlaceUserEmail,ThirdPlaceUserEmail,Created,Deadline,Branch")] Contest contest)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerEmail,Title,Description,IsNsfw,IsDeleted,IsBanned,SkillLevel,MaxParticipants,CurrentParticipants,FirstPlaceUserEmail,SecondPlaceUserEmail,ThirdPlaceUserEmail,Created,Deadline,Branch")] Contest contest)
         {
             if (id != contest.Id)
             {
                 return NotFound();
             }
+            string? email = User.Identity.Name;
+            if (email == null || email != contest.OwnerEmail) return View(contest);
 
+            if (contest.Title == "" || contest.Title == null
+                || contest.Description == "" || contest.Description == null)
+            {
+                View(contest);
+            }
+
+            switch (contest.SkillLevel)
+            {
+                case "1":
+                    contest.SkillLevel = "Newbie";
+                    break;
+                case "2":
+                    contest.SkillLevel = "Beginner";
+                    break;
+                case "3":
+                    contest.SkillLevel = "Medium";
+                    break;
+                case "4":
+                    contest.SkillLevel = "Skilled";
+                    break;
+                case "5":
+                    contest.SkillLevel = "Professional";
+                    break;
+                case "6":
+                    contest.SkillLevel = "Art God";
+                    break;
+                case "7":
+                    contest.SkillLevel = "All";
+                    break;
+                default:
+                    return View(contest);
+            }
+
+            switch (contest.MaxParticipants)
+            {
+                case 10:
+                    break;
+                case 25:
+                    break;
+                case 50:
+                    if (!(User.IsInRole("Premium") ||
+                        User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 100:
+                    if (!(User.IsInRole("Premium") ||
+                        User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 250:
+                    if (!(User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 500:
+                    if (!(User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                case 1000:
+                    if (!(User.IsInRole("Admin")))
+                    {
+                        return View(contest);
+                    }
+                    break;
+                default:
+                    return View(contest);
+            }
+
+            switch (contest.Branch)
+            {
+                case "1":
+                    contest.Branch = "Digital drawing";
+                    break;
+                case "2":
+                    contest.Branch = "Digital painting";
+                    break;
+                case "3":
+                    contest.Branch = "Traditional drawing";
+                    break;
+                case "4":
+                    contest.Branch = "Traditional painting";
+                    break;
+                case "5":
+                    contest.Branch = "Photography";
+                    break;
+                case "6":
+                    contest.Branch = "3D";
+                    break;
+                case "7":
+                    contest.Branch = "Other";
+                    break;
+                default:
+                    return View(contest);
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -245,11 +359,9 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Contests/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            // Temporary end
-            return RedirectToAction(nameof(Index));
-
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
@@ -257,17 +369,20 @@ namespace ArtContestClub.Controllers
 
             var contest = await _context.Contests
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contest == null)
+            if (contest == null || contest.OwnerEmail != User.Identity.Name)
             {
                 return NotFound();
             }
 
             return View(contest);
+
+
         }
 
         // POST: Contests/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Temporary end
@@ -280,10 +395,29 @@ namespace ArtContestClub.Controllers
             var contest = await _context.Contests.FindAsync(id);
             if (contest != null)
             {
-                _context.Contests.Remove(contest);
+                if(contest.OwnerEmail == User.Identity.Name)
+                {
+                    contest.IsDeleted = true;
+                    try
+                    {
+                        _context.Update(contest);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!ContestExists(contest.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    _context.Contests.Update(contest);
+                }
+                
             }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

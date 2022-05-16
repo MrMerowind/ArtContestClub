@@ -36,8 +36,11 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) { if (item.IsDeleted) continue; if (item.IsBanned) continue;
-        <tr>
+@foreach (var item in Model) {
+            if (item.IsDeleted) continue;
+            if (item.IsBanned) continue;
+            if (item.OwnerEmail != User.Identity.Name) continue;
+            <tr>
             
             <td>
                 @Html.DisplayFor(modelItem => item.Title)

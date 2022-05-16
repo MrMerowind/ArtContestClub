@@ -4,9 +4,6 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Contest</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,64 +11,45 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="OwnerEmail" class="control-label"></label>
-                <input asp-for="OwnerEmail" class="form-control" />
-                <span asp-validation-for="OwnerEmail" class="text-danger"></span>
+                <label asp-for="Title" class="control-label">Title</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+            <div class="form-outline">
+              <label class="form-label" asp-for="Description">Description</label>
+              <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+              <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="IsNsfw" class="control-label"></label>
-                <input asp-for="IsNsfw" class="form-control" />
+            <div class="form-check">
+                <label asp-for="IsNsfw" class="control-label">NSFW</label>
+                <input asp-for="IsNsfw" class="form-check-input" type="checkbox" value="true"/>
                 <span asp-validation-for="IsNsfw" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IsDeleted" class="control-label"></label>
-                <input asp-for="IsDeleted" class="form-control" />
-                <span asp-validation-for="IsDeleted" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IsBanned" class="control-label"></label>
-                <input asp-for="IsBanned" class="form-control" />
-                <span asp-validation-for="IsBanned" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SkillLevel" class="control-label"></label>
-                <input asp-for="SkillLevel" class="form-control" />
+                <label asp-for="SkillLevel" class="control-label">Skill level</label>
+                <select asp-for="SkillLevel" class="form-select">
+                  <option value="1"selected>Newbie</option>
+                  <option value="2">Beginner</option>
+                  <option value="3">Medium</option>
+                  <option value="4">Skilled</option>
+                  <option value="5">Professional</option>
+                  <option value="6">Art God</option>
+                  <option value="7">All</option>
+                </select>
                 <span asp-validation-for="SkillLevel" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MaxParticipants" class="control-label"></label>
-                <input asp-for="MaxParticipants" class="form-control" />
+                <label asp-for="MaxParticipants" class="control-label">Participants limit</label>
+                <select asp-for="MaxParticipants" class="form-select">
+                  <option value="10"selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50 (Premium)</option>
+                  <option value="100">100 (Premium)</option>
+                  <option value="250">250 (Mod)</option>
+                  <option value="500">500 (Mod)</option>
+                  <option value="1000">1000 (Admin)</option>
+                </select>
                 <span asp-validation-for="MaxParticipants" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CurrentParticipants" class="control-label"></label>
-                <input asp-for="CurrentParticipants" class="form-control" />
-                <span asp-validation-for="CurrentParticipants" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FirstPlaceUserEmail" class="control-label"></label>
-                <input asp-for="FirstPlaceUserEmail" class="form-control" />
-                <span asp-validation-for="FirstPlaceUserEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SecondPlaceUserEmail" class="control-label"></label>
-                <input asp-for="SecondPlaceUserEmail" class="form-control" />
-                <span asp-validation-for="SecondPlaceUserEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ThirdPlaceUserEmail" class="control-label"></label>
-                <input asp-for="ThirdPlaceUserEmail" class="form-control" />
-                <span asp-validation-for="ThirdPlaceUserEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Created" class="control-label"></label>
-                <input asp-for="Created" class="form-control" />
-                <span asp-validation-for="Created" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Deadline" class="control-label"></label>
@@ -80,7 +58,15 @@
             </div>
             <div class="form-group">
                 <label asp-for="Branch" class="control-label"></label>
-                <input asp-for="Branch" class="form-control" />
+                <select class="form-select form-select-sm" asp-for="Branch">
+                  <option value="1" selected>Digital drawing</option>
+                  <option value="2">Digital painting</option>
+                  <option value="3">Traditional drawing</option>
+                  <option value="4">Traditional painting</option>
+                  <option value="5">Photography</option>
+                  <option value="6">3D</option>
+                  <option value="7">Other</option>
+                </select>
                 <span asp-validation-for="Branch" class="text-danger"></span>
             </div>
             <div class="form-group">
