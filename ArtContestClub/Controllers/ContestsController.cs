@@ -39,9 +39,10 @@ namespace ArtContestClub.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Index(Contest contest)
+        public async Task<IActionResult> Index(Contest? contest)
         {
             var searchResult = _context.Contests.AsQueryable();
+            if (contest == null) return View();
 
             if (contest.Title != null && contest.Title != "")
             {
@@ -136,25 +137,26 @@ namespace ArtContestClub.Controllers
             searchResult = searchResult.Where(p => p.IsBanned.Equals(false) || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name));
 
             searchResult = searchResult.Take(100);
-            
+
             return View(await searchResult.ToListAsync());
 
         }
 
         // GET: Contests/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
             }
 
-            var contest = await _context.Contests
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var contest = await _context.Contests.FirstOrDefaultAsync(m => m.Id == id);
             if (contest == null)
             {
                 return NotFound();
             }
+            contest.ContestParticipants = _context.ContestParticipants
+                .Where(p => p.ParticipantEmail == User.Identity.Name && p.ContestId == id).ToList();
 
             return View(contest);
         }
@@ -178,10 +180,14 @@ namespace ArtContestClub.Controllers
             if(email == null) return View(contest);
             else contest.OwnerEmail = email;
 
-            if(contest.Title == "" || contest.Title == null
-                || contest.Description == "" || contest.Description == null)
+            if(contest.Title == "" || contest.Title == null)
             {
-                View(contest);
+                contest.Title = "Empty";
+            }
+
+            if (contest.Description == "" || contest.Description == null)
+            {
+                contest.Description = "Empty";
             }
 
             switch (contest.SkillLevel)
@@ -208,7 +214,8 @@ namespace ArtContestClub.Controllers
                     contest.SkillLevel = "All";
                     break;
                 default:
-                    return View(contest);
+                    contest.SkillLevel = "All";
+                    break;
             }
 
             switch (contest.MaxParticipants)
@@ -254,12 +261,13 @@ namespace ArtContestClub.Controllers
                     }
                     break;
                 default:
-                    return View(contest);
+                    contest.MaxParticipants = 10;
+                    break;
             }
 
-            if(contest.Deadline <= DateTime.Now)
+            if (contest.Deadline == null || contest.Deadline <= DateTime.Now)
             {
-                return View(contest);
+                contest.Deadline = null;
             }
 
             switch (contest.Branch)
@@ -286,7 +294,8 @@ namespace ArtContestClub.Controllers
                     contest.Branch = "Other";
                     break;
                 default:
-                    return View(contest);
+                    contest.Branch = "Other";
+                    break;
             }
 
             contest.ThirdPlaceUserEmail = null;
@@ -297,11 +306,11 @@ namespace ArtContestClub.Controllers
 
             contest.IsBanned = false;
             contest.IsDeleted = false;
-            if (ModelState.IsValid)
+            if ( true || ModelState.IsValid)
             {
                 _context.Add(contest);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyContests));
             }
             return View(contest);
         }
@@ -468,6 +477,102 @@ namespace ArtContestClub.Controllers
             return View(contest);
         }
 
+        [Authorize]
+        public async Task<IActionResult> Join(int id)
+        {
+            if (id == null || _context.Contests == null)
+            {
+                return NotFound();
+            }
+
+            if (_context.Contests == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Contests'  is null.");
+            }
+            var contest = await _context.Contests.FindAsync(id);
+            if (contest != null && contest.IsDeleted == false && contest.IsBanned == false)
+            {
+                var joinRecord = _context.ContestParticipants.FirstOrDefault(m => m.ContestId == contest.Id);
+                if (joinRecord == null)
+                {
+                    if(contest.MaxParticipants <= contest.CurrentParticipants || (contest.Deadline != null && contest.Deadline <= DateTime.Now))
+                    {
+                        return Redirect("~/Contests/Details?id=" + id);
+                    }
+                    try
+                    {
+                        _context.ContestParticipants.Add(new ContestParticipant
+                        {
+                            ContestId = id,
+                            ParticipantEmail = User.Identity.Name
+                        });
+                        contest.CurrentParticipants++;
+                        _context.Contests.Update(contest);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!ContestExists(contest.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
+
+            }
+
+            return Redirect("~/Contests/Details?id=" + id);
+
+
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Leave(int id)
+        {
+            if (id == null || _context.ContestParticipants == null)
+            {
+                return NotFound();
+            }
+
+            if (_context.ContestParticipants == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Contests'  is null.");
+            }
+            var contest = _context.Contests.FirstOrDefault(p => p.Id == id);
+            var contestParticipant = _context.ContestParticipants
+                .FirstOrDefault(p => p.ContestId == id && p.ParticipantEmail == User.Identity.Name);
+            if (contestParticipant != null && contest != null && contest.Deadline > DateTime.Now)
+            {
+                try
+                {
+                    _context.ContestParticipants.Remove(contestParticipant);
+                    contest.CurrentParticipants--;
+                    _context.Contests.Update(contest);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ContestExists(contestParticipant.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+            }
+
+            return Redirect("~/Contests/Details?id=" + id);
+
+
+        }
+
         // GET: Contests/Delete/5
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
@@ -507,7 +612,7 @@ namespace ArtContestClub.Controllers
                     contest.IsDeleted = true;
                     try
                     {
-                        _context.Update(contest);
+                        _context.Contests.Update(contest);
                         await _context.SaveChangesAsync();
                     }
                     catch (DbUpdateConcurrencyException)
@@ -521,7 +626,6 @@ namespace ArtContestClub.Controllers
                             throw;
                         }
                     }
-                    _context.Contests.Update(contest);
                 }
                 
             }
