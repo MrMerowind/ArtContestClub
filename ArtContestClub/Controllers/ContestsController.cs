@@ -21,16 +21,124 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Contests
+        /*
         public async Task<IActionResult> Index(int? page)
         {
             if (page == null || page < 0) page = 0;
             return View(await _context.Contests.Where(p => p.IsBanned == false && p.IsDeleted == false)
                 .OrderBy(p => p.Id).Skip((int)page * 100).Take(100).ToListAsync());
         }
+        */
 
         public async Task<IActionResult> MyContests()
         {
             return View(await _context.Contests.Where(p => p.OwnerEmail == User.Identity.Name && p.IsDeleted == false).ToListAsync());
+        }
+
+        public IActionResult SearchContest()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Index(Contest contest)
+        {
+            var searchResult = _context.Contests.AsQueryable();
+
+            if (contest.Title != null && contest.Title != "")
+            {
+                searchResult = searchResult.Where(p => p.Title.Contains(contest.Title));
+            }
+
+            switch (contest.SkillLevel)
+            {
+                case "1":
+                    contest.SkillLevel = "Newbie";
+                    break;
+                case "2":
+                    contest.SkillLevel = "Beginner";
+                    break;
+                case "3":
+                    contest.SkillLevel = "Medium";
+                    break;
+                case "4":
+                    contest.SkillLevel = "Skilled";
+                    break;
+                case "5":
+                    contest.SkillLevel = "Professional";
+                    break;
+                case "6":
+                    contest.SkillLevel = "Art God";
+                    break;
+                case "7":
+                    contest.SkillLevel = "All";
+                    break;
+                case "8":
+                    contest.SkillLevel = "Any";
+                    break;
+                default:
+                    contest.SkillLevel = "Any";
+                    break;
+            }
+
+            if (contest.SkillLevel != null && contest.SkillLevel != "Any" &&  contest.SkillLevel != "")
+            {
+                searchResult = searchResult.Where(p => p.SkillLevel.Equals(contest.SkillLevel));
+            }
+
+            if (contest.IsNsfw == false)
+            {
+                searchResult = searchResult.Where(p => p.IsNsfw == false);
+            }
+
+            searchResult = searchResult.Where(p => p.CurrentParticipants < p.MaxParticipants);
+
+            searchResult = searchResult.Where(p => p.Deadline > DateTime.Now);
+
+
+            switch (contest.Branch)
+            {
+                case "1":
+                    contest.Branch = "Digital drawing";
+                    break;
+                case "2":
+                    contest.Branch = "Digital painting";
+                    break;
+                case "3":
+                    contest.Branch = "Traditional drawing";
+                    break;
+                case "4":
+                    contest.Branch = "Traditional painting";
+                    break;
+                case "5":
+                    contest.Branch = "Photography";
+                    break;
+                case "6":
+                    contest.Branch = "3D";
+                    break;
+                case "7":
+                    contest.Branch = "Other";
+                    break;
+                case "8":
+                    contest.Branch = "Any";
+                    break;
+                default:
+                    contest.Branch = "Any";
+                    break;
+            }
+
+            if (contest.Branch != null && contest.Branch != "Any" && contest.Branch != "")
+            {
+                searchResult = searchResult.Where(p => p.Branch.Equals(contest.Branch));
+            }
+
+
+            searchResult = searchResult.Where(p => p.IsDeleted.Equals(false));
+
+            searchResult = searchResult.Where(p => p.IsBanned.Equals(false) || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name));
+
+            searchResult = searchResult.Take(100);
+            
+            return View(await searchResult.ToListAsync());
+
         }
 
         // GET: Contests/Details/5

@@ -9,28 +9,25 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsNsfw)
+                NSFW
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SkillLevel)
+                Skill level
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.MaxParticipants)
+                Capacity
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CurrentParticipants)
+                Contestants
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Created)
+                Deadline
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Deadline)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Branch)
+                Branch
             </th>
             <th></th>
         </tr>
@@ -55,9 +52,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CurrentParticipants)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Deadline)
