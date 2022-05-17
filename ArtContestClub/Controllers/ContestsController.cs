@@ -495,9 +495,6 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // Temporary end
-            return RedirectToAction(nameof(Index));
-
             if (_context.Contests == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Contests'  is null.");
