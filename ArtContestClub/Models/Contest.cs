@@ -20,9 +20,9 @@ namespace ArtContestClub.Models
         public DateTime Created { get; set; }
         public DateTime? Deadline { get; set; }
         public string? Branch { get; set; }
-        public ICollection<ContestParticipant> ContestParticipants { get; set; }
-        public ICollection<ContestComment> Comments { get; set; }
-        public ICollection<ContestSubmission> ContestSubmissions { get; set; }
+        public ICollection<ContestParticipant>? ContestParticipants { get; set; }
+        public ICollection<ContestComment>? Comments { get; set; }
+        public ICollection<ContestSubmission>? ContestSubmissions { get; set; }
         
 
     }

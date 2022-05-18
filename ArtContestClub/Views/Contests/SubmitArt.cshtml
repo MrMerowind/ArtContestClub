@@ -1,0 +1,45 @@
+﻿@model ArtContestClub.Models.ContestSubmission
+
+@{
+    ViewData["Title"] = "Submit art";
+}
+
+<h1>Submit art</h1>
+<br />
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  <strong>Information!</strong> Upload your image on other website. This webside does not allow uploading yet! You can upload on 
+  <a href="https://imgur.com/upload" class="alert-link">imgur.com</a>, 
+  <a href="https://www.deviantart.com/submit/" class="alert-link">deviantart.com</a> or
+  <a href="https://www.artstation.com/" class="alert-link">artstation.com</a> and more!
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <div asp-validation-summary="None" class="text-danger"></div>
+            <form asp-controller="Contests" asp-action="SubmitArtConfirm" method="post" class="form-floating">
+            
+                <input hidden asp-for="ContestId" value="@Model.Id" />
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label">Title</label>
+                    <input id="TitleInputForSearching" asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ArtLink" class="control-label">Link to art</label>
+                    <input asp-for="ArtLink" class="form-control" />
+                    <span asp-validation-for="ArtLink" class="text-danger"></span>
+                </div>
+                <br/>
+                <div class="form-group">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                </div>
+            </form>
+        
+    </div>
+</div>
+
+
+@section Scripts {
+    @*{await Html.RenderPartialAsync("_ValidationScriptsPartial");}*@
+}

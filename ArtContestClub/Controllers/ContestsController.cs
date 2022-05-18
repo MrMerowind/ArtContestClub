@@ -39,53 +39,55 @@ namespace ArtContestClub.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Index(Contest? contest)
+        public async Task<IActionResult> Index(string? Title, bool? IsNsfw, string SkillLevel, string Branch, int page = 0)
         {
             var searchResult = _context.Contests.AsQueryable();
-            if (contest == null) return View();
+            if (Title == null) Title = "";
+            if (IsNsfw == null) IsNsfw = false;
+            if (SkillLevel == null || Branch == null) return View();
+            if (page <= 0) page = 0;
 
-            if (contest.Title != null && contest.Title != "")
+            if (Title != "")
             {
-                searchResult = searchResult.Where(p => p.Title.Contains(contest.Title));
+                searchResult = searchResult.Where(p => p.Title.Contains(Title));
             }
 
-            switch (contest.SkillLevel)
+            switch (SkillLevel)
             {
                 case "1":
-                    contest.SkillLevel = "Newbie";
+                    SkillLevel = "Newbie";
                     break;
                 case "2":
-                    contest.SkillLevel = "Beginner";
+                    SkillLevel = "Beginner";
                     break;
                 case "3":
-                    contest.SkillLevel = "Medium";
+                    SkillLevel = "Medium";
                     break;
                 case "4":
-                    contest.SkillLevel = "Skilled";
+                    SkillLevel = "Skilled";
                     break;
                 case "5":
-                    contest.SkillLevel = "Professional";
+                    SkillLevel = "Professional";
                     break;
                 case "6":
-                    contest.SkillLevel = "Art God";
+                    SkillLevel = "Art God";
                     break;
                 case "7":
-                    contest.SkillLevel = "All";
+                    SkillLevel = "All";
                     break;
                 case "8":
-                    contest.SkillLevel = "Any";
+                    SkillLevel = "Any";
                     break;
                 default:
-                    contest.SkillLevel = "Any";
                     break;
             }
 
-            if (contest.SkillLevel != null && contest.SkillLevel != "Any" &&  contest.SkillLevel != "")
+            if (SkillLevel != "Any" && SkillLevel != "")
             {
-                searchResult = searchResult.Where(p => p.SkillLevel.Equals(contest.SkillLevel));
+                searchResult = searchResult.Where(p => p.SkillLevel.Equals(SkillLevel));
             }
 
-            if (contest.IsNsfw == false)
+            if (IsNsfw == false)
             {
                 searchResult = searchResult.Where(p => p.IsNsfw == false);
             }
@@ -95,40 +97,39 @@ namespace ArtContestClub.Controllers
             searchResult = searchResult.Where(p => p.Deadline > DateTime.Now);
 
 
-            switch (contest.Branch)
+            switch (Branch)
             {
                 case "1":
-                    contest.Branch = "Digital drawing";
+                    Branch = "Digital drawing";
                     break;
                 case "2":
-                    contest.Branch = "Digital painting";
+                    Branch = "Digital painting";
                     break;
                 case "3":
-                    contest.Branch = "Traditional drawing";
+                    Branch = "Traditional drawing";
                     break;
                 case "4":
-                    contest.Branch = "Traditional painting";
+                    Branch = "Traditional painting";
                     break;
                 case "5":
-                    contest.Branch = "Photography";
+                    Branch = "Photography";
                     break;
                 case "6":
-                    contest.Branch = "3D";
+                    Branch = "3D";
                     break;
                 case "7":
-                    contest.Branch = "Other";
+                    Branch = "Other";
                     break;
                 case "8":
-                    contest.Branch = "Any";
+                    Branch = "Any";
                     break;
                 default:
-                    contest.Branch = "Any";
                     break;
             }
 
-            if (contest.Branch != null && contest.Branch != "Any" && contest.Branch != "")
+            if (Branch != "Any" && Branch != "")
             {
-                searchResult = searchResult.Where(p => p.Branch.Equals(contest.Branch));
+                searchResult = searchResult.Where(p => p.Branch.Equals(Branch));
             }
 
 
@@ -136,6 +137,8 @@ namespace ArtContestClub.Controllers
 
             searchResult = searchResult.Where(p => p.IsBanned.Equals(false) || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name));
 
+            searchResult = searchResult.Skip(100 * page);
+            
             searchResult = searchResult.Take(100);
 
             return View(await searchResult.ToListAsync());
@@ -155,8 +158,11 @@ namespace ArtContestClub.Controllers
             {
                 return NotFound();
             }
-            contest.ContestParticipants = _context.ContestParticipants
-                .Where(p => p.ParticipantEmail == User.Identity.Name && p.ContestId == id).ToList();
+            contest.ContestParticipants = await _context.ContestParticipants
+                .Where(p => p.ParticipantEmail == User.Identity.Name && p.ContestId == id).ToListAsync();
+
+            contest.ContestSubmissions = await _context.ContestSubmissions.Where(p => p.ContestId == id && p.IsDeleted == false
+            && (p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name))).ToListAsync(); 
 
             return View(contest);
         }
@@ -166,6 +172,52 @@ namespace ArtContestClub.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+
+        [Authorize]
+        public IActionResult SubmitArt(int id)
+        {
+            return View(new ContestSubmission() { Id = id });
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> SubmitArtConfirm(string? Title, string? ArtLink, int? ContestId)
+        {
+            if (Title == null || ArtLink == null || ContestId == null) return Redirect("~/Contests/Details?id=" + ContestId);
+            ContestSubmission contestSubmission = new ContestSubmission()
+            {
+                Title = Title,
+                ArtLink = ArtLink,
+                Username = User.Identity.Name,
+                ContestId = ContestId,
+                Submited = DateTime.Now,
+                IsDeleted = false,
+                IsBanned = false,
+            };
+
+            var contest = _context.Contests.FirstOrDefault(m => m.Id == ContestId);
+            if (contest != null && contest.IsDeleted == false && contest.IsBanned == false &&
+                (contest.Deadline == null || (contest.Deadline != null && contest.Deadline > DateTime.Now)) )
+            {
+                var previousSubmission = _context.ContestSubmissions
+                .FirstOrDefault(p => p.ContestId == ContestId && p.Username == User.Identity.Name);
+                
+                if(previousSubmission == null)
+                {
+                    _context.ContestSubmissions.Add(contestSubmission);
+                }
+                else
+                {
+                    _context.ContestSubmissions.Remove(previousSubmission);
+                    _context.ContestSubmissions.Add(contestSubmission);
+                }
+                await _context.SaveChangesAsync();
+            }
+            return Redirect("~/Contests/Details?id=" + ContestId);
         }
 
         // POST: Contests/Create
@@ -308,7 +360,7 @@ namespace ArtContestClub.Controllers
             contest.IsDeleted = false;
             if ( true || ModelState.IsValid)
             {
-                _context.Add(contest);
+                _context.Contests.Add(contest);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(MyContests));
             }

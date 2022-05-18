@@ -11,6 +11,6 @@
         public DateTime Submited { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsBanned { get; set; }
-        public ICollection<SubmissionComment> SubmissionComments { get; set; }
+        public ICollection<SubmissionComment>? SubmissionComments { get; set; }
     }
 }

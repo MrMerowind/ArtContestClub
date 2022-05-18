@@ -4,17 +4,17 @@
     ViewData["Title"] = "Details";
 }
 
-<div class="container-fluid card">
+<div class="container-fluid card bg-dark text-white">
   <div class="card-body">
     <h5 class="card-title">@Html.DisplayFor(model => model.Title)</h5>
     @{
         if(Model.IsNsfw)
         {
-                <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
         }
         else
         {
-                <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
         }
     }
     <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
@@ -24,11 +24,11 @@
                 {
                     if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                     {
-                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                            <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                     }
                     else
                     {
-                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                     }
                 }
                 else
@@ -39,17 +39,17 @@
                     {
                         if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                         {
-                            <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                         }
                         else
                         {
-                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                         }
                     }
                     else
                     {
-                        <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
-                        <a class="btn btn-success mb-3" asp-controller="People" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
+                            <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
+                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
                     }
             }
             
@@ -67,3 +67,19 @@
     </div>
   </div>
 </div>
+
+
+
+
+@if (Model != null && Model.ContestSubmissions != null) foreach(var i in Model.ContestSubmissions)
+{
+    <br />
+    <div class="card bg-secondary text-white">
+        <div class="card-body">
+            <h5 class="card-title text-center">@i.Title</h5>
+            <center>
+            <img src="@i.ArtLink" class="card-img" style="width: 60%;">
+            </center>
+        </div>
+    </div>
+}

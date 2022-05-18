@@ -8,6 +8,6 @@
         public bool IsDeleted { get; set; }
         public bool IsBanned { get; set; }
         public int? ContestSubmissionId { get; set; }
-        public ContestSubmission ContestSubmission { get; set; }
+        public ContestSubmission? ContestSubmission { get; set; }
     }
 }
