@@ -728,7 +728,7 @@ namespace ArtContestClub.Controllers
                 }
                 
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("MyContests");
         }
 
         private bool ContestExists(int id)
