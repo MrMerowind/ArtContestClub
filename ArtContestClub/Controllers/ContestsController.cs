@@ -146,7 +146,7 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Contests/Details/5
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id, int alreadySubmitted = 0, int reportContest = 0)
         {
             if (id == null || _context.Contests == null)
             {
@@ -158,6 +158,25 @@ namespace ArtContestClub.Controllers
             {
                 return NotFound();
             }
+
+            if (reportContest == 0)
+            {
+                ViewData["reportContest"] = "false";
+            }
+            else
+            {
+                ViewData["reportContest"] = "true";
+            }
+
+            if(alreadySubmitted == 1)
+            {
+                ViewData["alreadySubmitted"] = "true";
+            }
+            else
+            {
+                ViewData["alreadySubmitted"] = "false";
+            }
+
             contest.ContestParticipants = await _context.ContestParticipants
                 .Where(p => p.ParticipantEmail == User.Identity.Name && p.ContestId == id).ToListAsync();
 
@@ -228,9 +247,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Create([Bind("Id,OwnerEmail,Title,Description,IsNsfw,IsDeleted,IsBanned,SkillLevel,MaxParticipants,CurrentParticipants,FirstPlaceUserEmail,SecondPlaceUserEmail,ThirdPlaceUserEmail,Created,Deadline,Branch")] Contest contest)
         {
-            string? email = User.Identity.Name;
-            if(email == null) return View(contest);
-            else contest.OwnerEmail = email;
+            contest.OwnerEmail = User.Identity.Name;
 
             if(contest.Title == "" || contest.Title == null)
             {
@@ -597,7 +614,29 @@ namespace ArtContestClub.Controllers
             var contest = _context.Contests.FirstOrDefault(p => p.Id == id);
             var contestParticipant = _context.ContestParticipants
                 .FirstOrDefault(p => p.ContestId == id && p.ParticipantEmail == User.Identity.Name);
-            if (contestParticipant != null && contest != null && contest.Deadline > DateTime.Now)
+
+
+            bool userAlreadySubmittedArt = false;
+            if(_context.ContestSubmissions != null)
+            {
+                var contestUserSubmission = _context.ContestSubmissions
+                .FirstOrDefault(p => p.ContestId == id && p.Username == User.Identity.Name);
+                if (contestUserSubmission == null)
+                {
+                    userAlreadySubmittedArt = false;
+                }
+                else
+                {
+                    userAlreadySubmittedArt = true;
+                }
+            }
+            else
+            {
+                userAlreadySubmittedArt = false;
+            }
+
+
+            if (!userAlreadySubmittedArt && contestParticipant != null && contest != null && contest.Deadline > DateTime.Now)
             {
                 try
                 {
@@ -620,7 +659,15 @@ namespace ArtContestClub.Controllers
 
             }
 
-            return Redirect("~/Contests/Details?id=" + id);
+            if(userAlreadySubmittedArt)
+            {
+                return Redirect("~/Contests/Details?id=" + id + "&alreadySubmitted=1");
+            }
+            else
+            {
+                return Redirect("~/Contests/Details?id=" + id);
+            }
+            
 
 
         }

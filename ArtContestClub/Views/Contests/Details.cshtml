@@ -4,17 +4,43 @@
     ViewData["Title"] = "Details";
 }
 
+@{
+    if(ViewData["alreadySubmitted"] != null && ViewData["alreadySubmitted"].ToString().Equals("true"))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> You can not leave contest after submitting art.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        ViewData["alreadySubmitted"] = "false";
+    }
+
+}
+
+@{
+    if(ViewData["reportContest"] != null && ViewData["reportContest"].ToString().Equals("true"))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> This feature is not implemented yet.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        ViewData["reportContest"] = "false";
+    }
+
+}
+
 <div class="container-fluid card bg-dark text-white">
   <div class="card-body">
     <h5 class="card-title">@Html.DisplayFor(model => model.Title)</h5>
     @{
         if(Model.IsNsfw)
         {
-                    <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
         }
         else
         {
-                    <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
         }
     }
     <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
@@ -24,11 +50,11 @@
                 {
                     if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                     {
-                            <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                     }
                     else
                     {
-                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                     }
                 }
                 else
@@ -39,23 +65,23 @@
                     {
                         if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                         {
-                                <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                            <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                         }
                         else
                         {
-                                <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                         }
                     }
                     else
                     {
-                            <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
-                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
+                                        <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
+                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
                     }
             }
             
             
         }
-        <a class="btn btn-danger mb-3" asp-controller="People" asp-action="SubmitArt" asp-route-id="@Model?.Id">Report</a>
+        <a class="btn btn-danger mb-3" asp-controller="Contests" asp-action="Details" asp-route-id="@Model?.Id" asp-route-reportContest="@Model?.Id">Report</a>
     </div>
     <div class="card-footer">
         Deadline: @Html.DisplayFor(model => model.Deadline) <br />
@@ -77,6 +103,7 @@
     <div class="card bg-secondary text-white">
         <div class="card-body">
             <h5 class="card-title text-center">@i.Title</h5>
+            <h6 class="card-subtitle text-center">Created by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@i.Username">@i.Username</a></h6>
             <center>
             <img src="@i.ArtLink" class="card-img" style="width: 60%;">
             </center>
