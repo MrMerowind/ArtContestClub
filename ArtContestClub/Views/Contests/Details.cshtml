@@ -7,10 +7,10 @@
 @{
     if(ViewData["alreadySubmitted"] != null && ViewData["alreadySubmitted"].ToString().Equals("true"))
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error!</strong> You can not leave contest after submitting art.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error!</strong> You can not leave contest after submitting art.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
         ViewData["alreadySubmitted"] = "false";
     }
@@ -20,10 +20,10 @@
 @{
     if(ViewData["reportContest"] != null && ViewData["reportContest"].ToString().Equals("true"))
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error!</strong> This feature is not implemented yet.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error!</strong> This feature is not implemented yet.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
         ViewData["reportContest"] = "false";
     }
@@ -36,11 +36,11 @@
     @{
         if(Model.IsNsfw)
         {
-                                <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
+                                            <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
         }
         else
         {
-                                <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
+                                            <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
         }
     }
     <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
@@ -50,11 +50,11 @@
                 {
                     if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                     {
-                                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                                    <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                     }
                     else
                     {
-                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                                    <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                     }
                 }
                 else
@@ -65,17 +65,17 @@
                     {
                         if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                         {
-                                            <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                         }
                         else
                         {
-                                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                         }
                     }
                     else
                     {
-                                        <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
-                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
+                                                    <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
+                                                    <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
                     }
             }
             
@@ -88,8 +88,9 @@
         Capacity: @Html.DisplayFor(model => model.CurrentParticipants)
         /
         @Html.DisplayFor(model => model.MaxParticipants) <br />
-        Level: @Html.DisplayFor(model => model.SkillLevel) <br />
-        Branch: @Html.DisplayFor(model => model.Branch)
+        Skill level: @Html.DisplayFor(model => model.SkillLevel) <br />
+        Branch: @Html.DisplayFor(model => model.Branch) <br />
+        Owner: <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@Html.DisplayFor(model => model.OwnerEmail)">@Html.DisplayFor(model => model.OwnerEmail)</a>
     </div>
   </div>
 </div>
@@ -105,8 +106,9 @@
             <div class="card-body">
                 <h5 class="card-title text-center">@i.Title</h5>
                 <h6 class="card-subtitle text-center">Created by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@i.Username">@i.Username</a></h6>
+                <br />
                 <center>
-                <img src="@i.ArtLink" class="card-img" style="width: 60%;">
+                <img src="@i.ArtLink" class="card-img" style="width: auto; max-height:600px">
                 </center>
             </div>
         </div>

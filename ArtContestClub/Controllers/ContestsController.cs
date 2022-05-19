@@ -23,18 +23,33 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> MyContests()
         {
-            return View(await _context.Contests.Where(p => p.OwnerEmail == User.Identity.Name && p.IsDeleted == false).ToListAsync());
+            var contests = await _context.Contests.Where(p => p.OwnerEmail == User.Identity.Name && p.IsDeleted == false).ToListAsync();
+            foreach(var c in contests)
+            {
+                c.ContestSubmissions = await _context.ContestSubmissions
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false &&(p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name)) ).ToListAsync();
+            }
+            return View(contests);
         }
 
         [Authorize]
         public async Task<IActionResult> JoinedContests()
         {
-            var joinedContests = await _context.ContestParticipants.Where(p => p.ParticipantEmail == User.Identity.Name).Select(p => p.ContestId).ToListAsync();
+            var joinedContests = _context.ContestParticipants
+                .Where(p => p.ParticipantEmail == User.Identity.Name)
+                .Select(p => p.ContestId);
 
-            var result = _context.Contests.Where(p => joinedContests
-            .Contains(p.Id) && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name)));
+            
+            var result = await _context.Contests
+                .Where(p => joinedContests.Contains(p.Id))
+                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name))).ToListAsync();
 
-            return View(await result.ToListAsync());
+            foreach (var c in result)
+            {
+                c.ContestSubmissions = await _context.ContestSubmissions
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name))).ToListAsync();
+            }
+            return View(result);
         }
 
         public IActionResult SearchContest()
@@ -141,9 +156,16 @@ namespace ArtContestClub.Controllers
 
             searchResult = searchResult.Skip(100 * page);
             
-            searchResult = searchResult.Take(100);
+            var result = await searchResult.Take(100).ToListAsync();
 
-            return View(await searchResult.ToListAsync());
+            foreach (var c in result)
+            {
+                c.ContestSubmissions = await _context.ContestSubmissions
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name))).ToListAsync();
+            }
+
+
+            return View(result);
 
         }
 
