@@ -20,19 +20,21 @@ namespace ArtContestClub.Controllers
             _context = context;
         }
 
-        // GET: Contests
-        /*
-        public async Task<IActionResult> Index(int? page)
-        {
-            if (page == null || page < 0) page = 0;
-            return View(await _context.Contests.Where(p => p.IsBanned == false && p.IsDeleted == false)
-                .OrderBy(p => p.Id).Skip((int)page * 100).Take(100).ToListAsync());
-        }
-        */
-
+        [Authorize]
         public async Task<IActionResult> MyContests()
         {
             return View(await _context.Contests.Where(p => p.OwnerEmail == User.Identity.Name && p.IsDeleted == false).ToListAsync());
+        }
+
+        [Authorize]
+        public async Task<IActionResult> JoinedContests()
+        {
+            var joinedContests = await _context.ContestParticipants.Where(p => p.ParticipantEmail == User.Identity.Name).Select(p => p.ContestId).ToListAsync();
+
+            var result = _context.Contests.Where(p => joinedContests
+            .Contains(p.Id) && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name)));
+
+            return View(await result.ToListAsync());
         }
 
         public IActionResult SearchContest()
@@ -561,7 +563,8 @@ namespace ArtContestClub.Controllers
             var contest = await _context.Contests.FindAsync(id);
             if (contest != null && contest.IsDeleted == false && contest.IsBanned == false)
             {
-                var joinRecord = _context.ContestParticipants.FirstOrDefault(m => m.ContestId == contest.Id);
+                var joinRecord = _context.ContestParticipants
+                    .FirstOrDefault(m => m.ContestId == contest.Id && m.ParticipantEmail == User.Identity.Name);
                 if (joinRecord == null)
                 {
                     if(contest.MaxParticipants <= contest.CurrentParticipants || (contest.Deadline != null && contest.Deadline <= DateTime.Now))

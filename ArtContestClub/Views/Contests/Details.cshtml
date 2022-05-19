@@ -100,13 +100,15 @@
 @if (Model != null && Model.ContestSubmissions != null) foreach(var i in Model.ContestSubmissions)
 {
     <br />
-    <div class="card bg-secondary text-white">
-        <div class="card-body">
-            <h5 class="card-title text-center">@i.Title</h5>
-            <h6 class="card-subtitle text-center">Created by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@i.Username">@i.Username</a></h6>
-            <center>
-            <img src="@i.ArtLink" class="card-img" style="width: 60%;">
-            </center>
+    <center>
+        <div class="card w-75 bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title text-center">@i.Title</h5>
+                <h6 class="card-subtitle text-center">Created by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@i.Username">@i.Username</a></h6>
+                <center>
+                <img src="@i.ArtLink" class="card-img" style="width: 60%;">
+                </center>
+            </div>
         </div>
-    </div>
+    </center>
 }
