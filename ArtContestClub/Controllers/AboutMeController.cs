@@ -7,29 +7,77 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ArtContestClub.Data;
 using ArtContestClub.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ArtContestClub.Controllers
 {
     public class AboutMeController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AboutMeController(ApplicationDbContext context)
+        public AboutMeController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
+
         // GET: AboutMe
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? id)
         {
-              return _context.AboutMe != null ? 
-                          View(await _context.AboutMe.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.AboutMe'  is null.");
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+            
+            if (id == null || id == "my")
+            {
+                if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    id = _userManager.GetUserId(User);
+                }
+                else
+                {
+                    return Redirect("~/AboutMe/SearchForUsers");
+                }
+            }
+
+            var userAboutMeData = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == id);
+            if(userAboutMeData == null)
+            {
+                _context.AboutMe.Add(new AboutMe()
+                {
+                    UserIdentity = id,
+                    Fullname = "",
+                    Caption = "",
+                    Bio = ""
+                });
+                _context.SaveChanges();
+            }
+            var userAboutMeDataResult = _context.AboutMe.Where(p => p.UserIdentity == id).ToList();
+
+
+            return View(userAboutMeDataResult);
         }
 
         // GET: AboutMe/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            return NotFound();
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
+            }
             if (id == null || _context.AboutMe == null)
             {
                 return NotFound();
@@ -45,40 +93,27 @@ namespace ArtContestClub.Controllers
             return View(aboutMe);
         }
 
-        // GET: AboutMe/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: AboutMe/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserIdentity,Fullname,Caption,Bio")] AboutMe aboutMe)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(aboutMe);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(aboutMe);
-        }
-
         // GET: AboutMe/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        [Authorize]
+        public async Task<IActionResult> Edit()
         {
-            if (id == null || _context.AboutMe == null)
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
+            }
+            if (_context.AboutMe == null)
+            {
+                return Redirect("~AboutMe/Index");
             }
 
-            var aboutMe = await _context.AboutMe.FindAsync(id);
+            var aboutMe = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == ViewData["UserIdentity"].ToString());
             if (aboutMe == null)
             {
-                return NotFound();
+                return Redirect("~AboutMe/Index");
             }
             return View(aboutMe);
         }
@@ -87,13 +122,25 @@ namespace ArtContestClub.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserIdentity,Fullname,Caption,Bio")] AboutMe aboutMe)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
+            }
             if (id != aboutMe.Id)
             {
                 return NotFound();
             }
+
+            aboutMe.UserIdentity = ViewData["UserIdentity"].ToString();
+
 
             if (ModelState.IsValid)
             {
@@ -116,43 +163,6 @@ namespace ArtContestClub.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(aboutMe);
-        }
-
-        // GET: AboutMe/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.AboutMe == null)
-            {
-                return NotFound();
-            }
-
-            var aboutMe = await _context.AboutMe
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (aboutMe == null)
-            {
-                return NotFound();
-            }
-
-            return View(aboutMe);
-        }
-
-        // POST: AboutMe/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.AboutMe == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.AboutMe'  is null.");
-            }
-            var aboutMe = await _context.AboutMe.FindAsync(id);
-            if (aboutMe != null)
-            {
-                _context.AboutMe.Remove(aboutMe);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool AboutMeExists(int id)

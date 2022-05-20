@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Contests\Edit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="ScaffoldingReadMe.txt" />
   </ItemGroup>
 
