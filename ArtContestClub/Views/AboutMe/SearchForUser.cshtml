@@ -1,0 +1,27 @@
+﻿@model ArtContestClub.Models.AboutMe
+
+<h4>Searching for user</h4>
+
+@if(ViewData["UserNotFound"].ToString() == "true")
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Warning! </strong> Can not find user.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row mx-auto">
+    <div class="col-md-4">
+        <form asp-action="SearchForUserConfirm" method="get">
+            <div asp-validation-summary="None" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserIdentity" class="control-label">User email or Id</label>
+                <input asp-for="UserIdentity" class="form-control" />
+                <span asp-validation-for="UserIdentity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

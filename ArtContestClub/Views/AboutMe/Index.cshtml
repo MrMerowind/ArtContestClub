@@ -14,12 +14,15 @@
         <div class="card-body">
             <h5 class="card-title">@Html.DisplayFor(modelItem => item.Fullname)</h5>
             <h6 class="card-subtitle mb-2 text-muted">@Html.DisplayFor(modelItem => item.Caption)</h6>
+            
             <p class="card-text">@Html.DisplayFor(modelItem => item.Bio)</p>
             <a asp-controller="Messages" asp-action="Create" asp-route-userId="@item.UserIdentity" class="btn btn-success">Send message</a>
             @if(item.UserIdentity == ViewData["UserIdentity"].ToString())
             {
                 <a asp-controller="AboutMe" asp-action="Edit" class="btn btn-warning">Edit information</a>
             }
+            <br />
+            <h7 class="card-subtitle mb-2 text-muted">User id: @Html.DisplayFor(modelItem => item.UserIdentity)</h7>
         </div>
     </div>
 }

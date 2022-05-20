@@ -44,26 +44,33 @@ namespace ArtContestClub.Controllers
                 }
                 else
                 {
-                    return Redirect("~/AboutMe/SearchForUsers");
+                    return Redirect("SearchForUsers");
                 }
             }
 
             var userAboutMeData = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == id);
-            if(userAboutMeData == null)
+            if (userAboutMeData == null)
             {
-                _context.AboutMe.Add(new AboutMe()
+                // Testing if user exist
+                var userLoginData = await _userManager.FindByIdAsync(id);
+                if(userLoginData == null)
                 {
-                    UserIdentity = id,
-                    Fullname = "",
-                    Caption = "",
-                    Bio = ""
-                });
-                _context.SaveChanges();
+                    _context.AboutMe.Add(new AboutMe()
+                    {
+                        UserIdentity = id,
+                        Fullname = "",
+                        Caption = "",
+                        Bio = ""
+                    });
+                    _context.SaveChanges();
+                }
             }
-            var userAboutMeDataResult = _context.AboutMe.Where(p => p.UserIdentity == id).ToList();
+            var userAboutMeDataResult = await _context.AboutMe.Where(p => p.UserIdentity == id).ToListAsync();
+
+            if (userAboutMeDataResult.Count > 0) return View(userAboutMeDataResult);
+            else return Redirect("SearchForUser?notFound=true");
 
 
-            return View(userAboutMeDataResult);
         }
 
         // GET: AboutMe/Details/5
@@ -91,6 +98,69 @@ namespace ArtContestClub.Controllers
             }
 
             return View(aboutMe);
+        }
+
+        public async Task<IActionResult> SearchForUser(string? notFound)
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+            if(notFound == "true")
+            {
+                ViewData["UserNotFound"] = "true";
+            }
+            else
+            {
+                ViewData["UserNotFound"] = "false";
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> SearchForUserConfirm(string UserIdentity)
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+            if (_context.AboutMe == null)
+            {
+                return Redirect("~Home/Index");
+            }
+
+            /// TU NIE DZIAŁA
+            var aboutMe = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == UserIdentity);
+            string aboutMeResultId = "NotFound";
+            if(aboutMe == null)
+            {
+                var userForUserManager = _userManager.Users.FirstOrDefault(p => p.Email == UserIdentity);
+                if(userForUserManager != null)
+                {
+                    aboutMe = _context.AboutMe
+                        .FirstOrDefault(p => p.UserIdentity == userForUserManager.Id);
+                    aboutMeResultId = aboutMe.UserIdentity;
+                }
+            }
+            else
+            {
+                aboutMeResultId = aboutMe.UserIdentity;
+            }
+            // DOTONT
+
+
+            if (aboutMe == null)
+            {
+                return Redirect("SearchForUser?notFound=true");
+            }
+            return Redirect("Index?id=" + aboutMeResultId);
         }
 
         // GET: AboutMe/Edit/5
@@ -132,7 +202,7 @@ namespace ArtContestClub.Controllers
             }
             else
             {
-                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
+                ViewData["UserIdentity"] = "User not loged in";
             }
             if (id != aboutMe.Id)
             {

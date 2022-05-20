@@ -187,6 +187,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWJvdXRNZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/ArtContestClubGit/ArtContestClub/Views/AboutMe/SearchForUser.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWJvdXRNZVxTZWFyY2hGb3JVc2VyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/ArtContestClubGit/ArtContestClub/Views/Contests/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVzdHNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

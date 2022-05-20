@@ -95,14 +95,14 @@ namespace ArtContestClub.Controllers
                 .Select(p => p.ContestId);
 
             
-            var result = _context.Contests
+            var result = await _context.Contests
                 .Where(p => joinedContests.Contains(p.Id))
-                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToList();
+                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
 
             foreach (var c in result)
             {
-                c.ContestSubmissions = _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToList();
+                c.ContestSubmissions = await _context.ContestSubmissions
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
             }
 
             if (result != null)
@@ -238,12 +238,12 @@ namespace ArtContestClub.Controllers
 
             searchResult = searchResult.Skip(20 * page);
             
-            var result = searchResult.Take(20).ToList();
+            var result = await searchResult.Take(20).ToListAsync();
 
             foreach (var c in result)
             {
-                c.ContestSubmissions = _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToList();
+                c.ContestSubmissions = await _context.ContestSubmissions
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
             }
 
             if (result != null)
@@ -303,11 +303,11 @@ namespace ArtContestClub.Controllers
                 ViewData["alreadySubmitted"] = "false";
             }
 
-            contest.ContestParticipants = _context.ContestParticipants
-                .Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.ContestId == id).ToList();
+            contest.ContestParticipants = await _context.ContestParticipants
+                .Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.ContestId == id).ToListAsync();
 
-            contest.ContestSubmissions = _context.ContestSubmissions.Where(p => p.ContestId == id && p.IsDeleted == false
-            && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToList();
+            contest.ContestSubmissions = await _context.ContestSubmissions.Where(p => p.ContestId == id && p.IsDeleted == false
+            && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
 
 
             ViewData[contest.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(contest.UserIdentity.ToString());
