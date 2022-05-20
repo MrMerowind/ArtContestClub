@@ -7,13 +7,14 @@
 
 @if(Model != null) foreach (var item in Model) 
 {
-    if(item.ContestSubmissions == null)
+    if(item != null)
+    if(item.ContestSubmissions == null || item.ContestSubmissions.Count <= 0)
     {
         <div class="card">
             <div class="card-header d-flex" >
                 <h1>
                     <a class="btn btn-success" asp-action="Details" asp-route-id="@item.Id">View</a>
-                    @if(User.Identity.Name == item.OwnerEmail)
+                    @if(ViewData["UserIdentity"] == item.UserIdentity)
                     {
                         <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     }
@@ -29,7 +30,7 @@
                     Branch: @Html.DisplayFor(modelItem => item.Branch)
 
                 </p>
-                <footer class="blockquote-footer">Contest by: <a class="text-black" asp-controller="AboutMe" asp-action="Index" asp-route-username="@item.OwnerEmail">@item.OwnerEmail</a></footer>
+                <footer class="blockquote-footer">Contest by: <a class="text-black" asp-controller="AboutMe" asp-action="Index" asp-route-username="@item.UserIdentity">@ViewData[item.UserIdentity]</a></footer>
             </blockquote>
             </div>
         </div>
@@ -41,7 +42,7 @@
            <div class="card-header d-flex" >
                 <h1>
                     <a class="btn btn-success" asp-action="Details" asp-route-id="@item.Id">View</a>
-                    @if(User.Identity.Name == item.OwnerEmail)
+                    @if(ViewData["UserIdentity"] == item.UserIdentity)
                     {
                         <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     }
@@ -57,7 +58,7 @@
                             <div class="carousel-item active">
                                 <img src="@sub.ArtLink" class="d-block mx-auto" alt="@sub.Title" style="max-height: 600px; width: auto;">
                                 <div class="carousel-caption d-none d-md-block bg-info p-2">
-                                    <h5>Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@sub.Username">@sub.Username</a></h5>
+                                    <h5>Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@sub.UserIdentity">@ViewData[sub.UserIdentity]</a></h5>
                                 </div>
                             </div>
                         }
@@ -66,7 +67,7 @@
                             <div class="carousel-item">
                                 <img src="@sub.ArtLink" class="d-block mx-auto" alt="@sub.Title" style="max-height: 600px; width: auto;">
                                 <div class="carousel-caption d-none d-md-block bg-info p-2">
-                                    <h5>Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@sub.Username">@sub.Username</a></h5>
+                                    <h5>Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@sub.UserIdentity">@ViewData[sub.UserIdentity]</a></h5>
                                 </div>
                             </div>
                             
@@ -95,7 +96,7 @@
                     Branch: @Html.DisplayFor(modelItem => item.Branch)
 
                 </p>
-                <footer class="blockquote-footer">Contest by: <a class="text-black" asp-controller="AboutMe" asp-action="Index" asp-route-username="@item.OwnerEmail">@item.OwnerEmail</a></footer>
+                <footer class="blockquote-footer">Contest by: <a class="text-black" asp-controller="AboutMe" asp-action="Index" asp-route-username="@item.UserIdentity">@ViewData[item.UserIdentity]</a></footer>
             </blockquote>
             </div>
         </div>

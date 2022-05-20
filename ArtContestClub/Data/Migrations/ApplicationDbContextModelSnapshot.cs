@@ -22,6 +22,32 @@ namespace ArtContestClub.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("ArtContestClub.Models.AboutMe", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Caption")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fullname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserIdentity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AboutMe");
+                });
+
             modelBuilder.Entity("ArtContestClub.Models.Contest", b =>
                 {
                     b.Property<int>("Id")
@@ -61,10 +87,6 @@ namespace ArtContestClub.Data.Migrations
                     b.Property<int>("MaxParticipants")
                         .HasColumnType("int");
 
-                    b.Property<string>("OwnerEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SecondPlaceUserEmail")
                         .HasColumnType("nvarchar(max)");
 
@@ -76,6 +98,10 @@ namespace ArtContestClub.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserIdentity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -105,7 +131,7 @@ namespace ArtContestClub.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OwnerEmail")
+                    b.Property<string>("UserIdentity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -127,7 +153,7 @@ namespace ArtContestClub.Data.Migrations
                     b.Property<int?>("ContestId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ParticipantEmail")
+                    b.Property<string>("UserIdentity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -166,7 +192,7 @@ namespace ArtContestClub.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserIdentity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -198,7 +224,7 @@ namespace ArtContestClub.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OwnerEmail")
+                    b.Property<string>("UserIdentity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

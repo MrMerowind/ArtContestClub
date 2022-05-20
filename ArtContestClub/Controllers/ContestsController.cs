@@ -8,46 +8,83 @@ using Microsoft.EntityFrameworkCore;
 using ArtContestClub.Data;
 using ArtContestClub.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace ArtContestClub.Controllers
 {
     public class ContestsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ContestsController(ApplicationDbContext context)
+        public ContestsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager; ;
+        }
+
+        public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
+        {
+
+            var person =_context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
+            string result = "Username";
+            if(person == null || (person.Fullname == null || person.Fullname == ""))
+            {
+                var person2 = _userManager.FindByIdAsync(userIdentity);
+                result = person2.Result.UserName;
+            }
+            else
+            {
+                result = person.Fullname;
+            }
+            return result;
         }
 
         [Authorize]
         public async Task<IActionResult> MyContests()
         {
-            var contests = await _context.Contests.Where(p => p.OwnerEmail == User.Identity.Name && p.IsDeleted == false).ToListAsync();
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
+
+            var contests = await _context.Contests.Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.IsDeleted == false).ToListAsync();
             foreach(var c in contests)
             {
                 c.ContestSubmissions = await _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false &&(p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name)) ).ToListAsync();
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false &&(p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User))) ).ToListAsync();
             }
+
+
+            if (contests != null)
+                foreach (var a in contests)
+                {
+                    ViewData[a.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(a.UserIdentity.ToString());
+                    if (a.ContestSubmissions != null)
+                    foreach(var b in a.ContestSubmissions)
+                    {
+                            ViewData[b.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(b.UserIdentity.ToString());
+                    }
+                }
+
             return View(contests);
         }
 
         [Authorize]
         public async Task<IActionResult> JoinedContests()
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             var joinedContests = _context.ContestParticipants
-                .Where(p => p.ParticipantEmail == User.Identity.Name)
+                .Where(p => p.UserIdentity == _userManager.GetUserId(User))
                 .Select(p => p.ContestId);
 
             
             var result = await _context.Contests
                 .Where(p => joinedContests.Contains(p.Id))
-                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name))).ToListAsync();
+                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
 
             foreach (var c in result)
             {
                 c.ContestSubmissions = await _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name))).ToListAsync();
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
             }
             return View(result);
         }
@@ -58,6 +95,7 @@ namespace ArtContestClub.Controllers
         }
         public async Task<IActionResult> Index(string? Title, bool? IsNsfw, string SkillLevel, string Branch, int page = 0)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             var searchResult = _context.Contests.AsQueryable();
             if (Title == null) Title = "";
             if (IsNsfw == null) IsNsfw = false;
@@ -152,7 +190,7 @@ namespace ArtContestClub.Controllers
 
             searchResult = searchResult.Where(p => p.IsDeleted.Equals(false));
 
-            searchResult = searchResult.Where(p => p.IsBanned.Equals(false) || (p.IsBanned == true && p.OwnerEmail == User.Identity.Name));
+            searchResult = searchResult.Where(p => p.IsBanned.Equals(false) || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)));
 
             searchResult = searchResult.Skip(100 * page);
             
@@ -161,7 +199,7 @@ namespace ArtContestClub.Controllers
             foreach (var c in result)
             {
                 c.ContestSubmissions = await _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name))).ToListAsync();
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
             }
 
 
@@ -172,6 +210,7 @@ namespace ArtContestClub.Controllers
         // GET: Contests/Details/5
         public async Task<IActionResult> Details(int id, int alreadySubmitted = 0, int reportContest = 0)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
@@ -202,10 +241,19 @@ namespace ArtContestClub.Controllers
             }
 
             contest.ContestParticipants = await _context.ContestParticipants
-                .Where(p => p.ParticipantEmail == User.Identity.Name && p.ContestId == id).ToListAsync();
+                .Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.ContestId == id).ToListAsync();
 
             contest.ContestSubmissions = await _context.ContestSubmissions.Where(p => p.ContestId == id && p.IsDeleted == false
-            && (p.IsBanned == false || (p.IsBanned == true && p.Username == User.Identity.Name))).ToListAsync(); 
+            && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
+
+
+            ViewData[contest.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(contest.UserIdentity.ToString());
+
+            if (contest.ContestSubmissions != null)
+            foreach (var a in contest.ContestSubmissions)
+            {
+                    ViewData[a.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(a.UserIdentity.ToString());
+            }
 
             return View(contest);
         }
@@ -214,12 +262,14 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public IActionResult Create()
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             return View();
         }
 
         [Authorize]
         public IActionResult SubmitArt(int id)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             return View(new ContestSubmission() { Id = id });
         }
 
@@ -230,12 +280,13 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> SubmitArtConfirm(string? Title, string? ArtLink, int? ContestId)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             if (Title == null || ArtLink == null || ContestId == null) return Redirect("~/Contests/Details?id=" + ContestId);
             ContestSubmission contestSubmission = new ContestSubmission()
             {
                 Title = Title,
                 ArtLink = ArtLink,
-                Username = User.Identity.Name,
+                UserIdentity = _userManager.GetUserId(User),
                 ContestId = ContestId,
                 Submited = DateTime.Now,
                 IsDeleted = false,
@@ -247,7 +298,7 @@ namespace ArtContestClub.Controllers
                 (contest.Deadline == null || (contest.Deadline != null && contest.Deadline > DateTime.Now)) )
             {
                 var previousSubmission = _context.ContestSubmissions
-                .FirstOrDefault(p => p.ContestId == ContestId && p.Username == User.Identity.Name);
+                .FirstOrDefault(p => p.ContestId == ContestId && p.UserIdentity == _userManager.GetUserId(User));
                 
                 if(previousSubmission == null)
                 {
@@ -271,7 +322,8 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Create([Bind("Id,OwnerEmail,Title,Description,IsNsfw,IsDeleted,IsBanned,SkillLevel,MaxParticipants,CurrentParticipants,FirstPlaceUserEmail,SecondPlaceUserEmail,ThirdPlaceUserEmail,Created,Deadline,Branch")] Contest contest)
         {
-            contest.OwnerEmail = User.Identity.Name;
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            contest.UserIdentity = _userManager.GetUserId(User);
 
             if(contest.Title == "" || contest.Title == null)
             {
@@ -412,6 +464,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             return NotFound();
             if (id == null || _context.Contests == null)
             {
@@ -434,13 +487,14 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerEmail,Title,Description,IsNsfw,IsDeleted,IsBanned,SkillLevel,MaxParticipants,CurrentParticipants,FirstPlaceUserEmail,SecondPlaceUserEmail,ThirdPlaceUserEmail,Created,Deadline,Branch")] Contest contest)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             return NotFound();
             if (id != contest.Id)
             {
                 return NotFound();
             }
-            string? email = User.Identity.Name;
-            if (email == null || email != contest.OwnerEmail) return View(contest);
+            string? email = _userManager.GetUserId(User);
+            if (email == null || email != contest.UserIdentity) return View(contest);
 
             if (contest.Title == "" || contest.Title == null
                 || contest.Description == "" || contest.Description == null)
@@ -573,6 +627,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Join(int id)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
@@ -586,7 +641,7 @@ namespace ArtContestClub.Controllers
             if (contest != null && contest.IsDeleted == false && contest.IsBanned == false)
             {
                 var joinRecord = _context.ContestParticipants
-                    .FirstOrDefault(m => m.ContestId == contest.Id && m.ParticipantEmail == User.Identity.Name);
+                    .FirstOrDefault(m => m.ContestId == contest.Id && m.UserIdentity == _userManager.GetUserId(User));
                 if (joinRecord == null)
                 {
                     if(contest.MaxParticipants <= contest.CurrentParticipants || (contest.Deadline != null && contest.Deadline <= DateTime.Now))
@@ -598,7 +653,7 @@ namespace ArtContestClub.Controllers
                         _context.ContestParticipants.Add(new ContestParticipant
                         {
                             ContestId = id,
-                            ParticipantEmail = User.Identity.Name
+                            UserIdentity = _userManager.GetUserId(User)
                         });
                         contest.CurrentParticipants++;
                         _context.Contests.Update(contest);
@@ -627,6 +682,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Leave(int id)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             if (id == null || _context.ContestParticipants == null)
             {
                 return NotFound();
@@ -638,14 +694,14 @@ namespace ArtContestClub.Controllers
             }
             var contest = _context.Contests.FirstOrDefault(p => p.Id == id);
             var contestParticipant = _context.ContestParticipants
-                .FirstOrDefault(p => p.ContestId == id && p.ParticipantEmail == User.Identity.Name);
+                .FirstOrDefault(p => p.ContestId == id && p.UserIdentity == _userManager.GetUserId(User));
 
 
             bool userAlreadySubmittedArt = false;
             if(_context.ContestSubmissions != null)
             {
                 var contestUserSubmission = _context.ContestSubmissions
-                .FirstOrDefault(p => p.ContestId == id && p.Username == User.Identity.Name);
+                .FirstOrDefault(p => p.ContestId == id && p.UserIdentity == _userManager.GetUserId(User));
                 if (contestUserSubmission == null)
                 {
                     userAlreadySubmittedArt = false;
@@ -701,6 +757,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
@@ -708,7 +765,7 @@ namespace ArtContestClub.Controllers
 
             var contest = await _context.Contests
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contest == null || contest.OwnerEmail != User.Identity.Name)
+            if (contest == null || contest.UserIdentity != _userManager.GetUserId(User))
             {
                 return NotFound();
             }
@@ -724,6 +781,7 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            ViewData["UserIdentity"] = _userManager.GetUserId(User);
             if (_context.Contests == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Contests'  is null.");
@@ -731,7 +789,7 @@ namespace ArtContestClub.Controllers
             var contest = await _context.Contests.FindAsync(id);
             if (contest != null)
             {
-                if(contest.OwnerEmail == User.Identity.Name)
+                if(contest.UserIdentity == _userManager.GetUserId(User))
                 {
                     contest.IsDeleted = true;
                     try

@@ -60,7 +60,7 @@
                 else
                 {
                     var contestParticipantsObject = Model.ContestParticipants
-                        .FirstOrDefault(p => p.ContestId == Model.Id && p.ParticipantEmail == User.Identity.Name);
+                        .FirstOrDefault(p => p.ContestId == Model.Id && p.UserIdentity == ViewData["UserIdentity"]);
                     if(contestParticipantsObject == null)
                     {
                         if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
@@ -90,7 +90,7 @@
         @Html.DisplayFor(model => model.MaxParticipants) <br />
         Skill level: @Html.DisplayFor(model => model.SkillLevel) <br />
         Branch: @Html.DisplayFor(model => model.Branch) <br />
-        Owner: <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@Html.DisplayFor(model => model.OwnerEmail)">@Html.DisplayFor(model => model.OwnerEmail)</a>
+        Owner: <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@Model.UserIdentity">@ViewData[Model.UserIdentity]</a>
     </div>
   </div>
 </div>
@@ -105,7 +105,7 @@
         <div class="card w-75 bg-secondary text-white">
             <div class="card-body">
                 <h5 class="card-title text-center">@i.Title</h5>
-                <h6 class="card-subtitle text-center">Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@i.Username">@i.Username</a></h6>
+                <h6 class="card-subtitle text-center">Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-username="@i.UserIdentity">@ViewData[i.UserIdentity]</a></h6>
                 <br />
                 <center>
                     <img src="@i.ArtLink" class="card-img" style="width: auto; max-height:600px">

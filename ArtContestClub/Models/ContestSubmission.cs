@@ -3,7 +3,7 @@
     public class ContestSubmission
     {
         public int Id { get; set; }
-        public string Username { get; set; }
+        public string UserIdentity { get; set; }
         public string Title { get; set; }
         public string ArtLink { get; set; }
         public int? ContestId { get; set; }
