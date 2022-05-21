@@ -34,7 +34,7 @@ namespace ArtContestClub.Controllers
                 var person2 = _userManager.FindByIdAsync(userIdentity);
                 if (person2 != null && person2.Result != null)
                 {
-                    result = person2.Result.UserName;
+                    result = person2.Result.UserName.Split('@')[0];
                 }
                 
             }
@@ -459,6 +459,12 @@ namespace ArtContestClub.Controllers
                 case 10:
                     break;
                 case 25:
+                    if (!(User.IsInRole("Premium") ||
+                        User.IsInRole("Admin") ||
+                        User.IsInRole("Mod")))
+                    {
+                        return View(contest);
+                    }
                     break;
                 case 50:
                     if(!(User.IsInRole("Premium") ||
@@ -472,26 +478,6 @@ namespace ArtContestClub.Controllers
                     if (!(User.IsInRole("Premium") ||
                         User.IsInRole("Admin") ||
                         User.IsInRole("Mod")))
-                    {
-                        return View(contest);
-                    }
-                    break;
-                case 250:
-                    if (!(User.IsInRole("Admin") ||
-                        User.IsInRole("Mod")))
-                    {
-                        return View(contest);
-                    }
-                    break;
-                case 500:
-                    if (!(User.IsInRole("Admin") ||
-                        User.IsInRole("Mod")))
-                    {
-                        return View(contest);
-                    }
-                    break;
-                case 1000:
-                    if (!(User.IsInRole("Admin")))
                     {
                         return View(contest);
                     }

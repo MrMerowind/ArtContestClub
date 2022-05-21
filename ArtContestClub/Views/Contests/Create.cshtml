@@ -42,12 +42,9 @@
                 <label asp-for="MaxParticipants" class="control-label">Participants limit</label>
                 <select asp-for="MaxParticipants" class="form-select">
                   <option value="10"selected>10</option>
-                  <option value="25">25</option>
+                  <option value="25">25 (Premium)</option>
                   <option value="50">50 (Premium)</option>
                   <option value="100">100 (Premium)</option>
-                  <option value="250">250 (Mod)</option>
-                  <option value="500">500 (Mod)</option>
-                  <option value="1000">1000 (Admin)</option>
                 </select>
                 <span asp-validation-for="MaxParticipants" class="text-danger"></span>
             </div>

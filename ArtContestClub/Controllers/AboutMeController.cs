@@ -73,33 +73,6 @@ namespace ArtContestClub.Controllers
 
         }
 
-        // GET: AboutMe/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            return NotFound();
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                ViewData["UserIdentity"] = _userManager.GetUserId(User);
-            }
-            else
-            {
-                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
-            }
-            if (id == null || _context.AboutMe == null)
-            {
-                return NotFound();
-            }
-
-            var aboutMe = await _context.AboutMe
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (aboutMe == null)
-            {
-                return NotFound();
-            }
-
-            return View(aboutMe);
-        }
-
         public async Task<IActionResult> SearchForUser(string? notFound)
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
