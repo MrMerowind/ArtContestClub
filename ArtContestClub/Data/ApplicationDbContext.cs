@@ -16,5 +16,7 @@ namespace ArtContestClub.Data
         public DbSet<ContestSubmission> ContestSubmissions { get; set; }
         public DbSet<SubmissionComment> SubmissionComments { get; set; }
         public DbSet<AboutMe> AboutMe { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Rank> Ranks { get; set; }
     }
 }

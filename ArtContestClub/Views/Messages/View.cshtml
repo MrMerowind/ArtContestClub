@@ -1,0 +1,37 @@
+﻿@model IEnumerable<ArtContestClub.Models.Message>
+
+@{
+    ViewData["Title"] = "My messages";
+}
+
+@if(ViewData["MessageSend"].ToString() == "true")
+{
+    <br />
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Message send! </strong> Your message is succesfully submitted.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="container position-static ">
+<br />
+@if(Model != null) foreach(var msg in Model)
+{
+  <div class="card" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <a asp-controller="AboutMe" asp-action="Index" asp-route-id="@msg.From" class="me-auto">@(ViewData[msg.From].ToString() + " (" + @msg.From + ")")</a>
+        <small class="text-muted">@msg.CreatedDate</small>
+        <a type="button" class="btn-close" aria-label="Close" asp-controller="Messages" asp-action="Delete" asp-route-id="@msg.Id"></a>
+    </div>
+    <div class="toast-body">
+        @msg.Content
+    </div>
+  </div>   
+  <br />
+}
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

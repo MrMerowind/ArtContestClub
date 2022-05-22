@@ -16,7 +16,7 @@
             <h6 class="card-subtitle mb-2 text-muted">@Html.DisplayFor(modelItem => item.Caption)</h6>
             
             <p class="card-text">@Html.DisplayFor(modelItem => item.Bio)</p>
-            <a asp-controller="Messages" asp-action="Create" asp-route-userId="@item.UserIdentity" class="btn btn-success">Send message</a>
+            <a asp-controller="Messages" asp-action="Create" asp-route-messageTo="@item.UserIdentity" class="btn btn-success">Send message</a>
             @if(item.UserIdentity == ViewData["UserIdentity"].ToString())
             {
                 <a asp-controller="AboutMe" asp-action="Edit" class="btn btn-warning">Edit information</a>

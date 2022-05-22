@@ -7,12 +7,11 @@
 @{
     if(ViewData["alreadySubmitted"] != null && ViewData["alreadySubmitted"].ToString().Equals("true"))
     {
+        <br />
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error!</strong> You can not leave contest after submitting art.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <strong>Error!</strong> You can not leave contest after submitting art.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
-        ViewData["alreadySubmitted"] = "false";
     }
 
 }
@@ -20,27 +19,54 @@
 @{
     if(ViewData["reportContest"] != null && ViewData["reportContest"].ToString().Equals("true"))
     {
+    <br />
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error!</strong> This feature is not implemented yet.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <strong>Error!</strong> This feature is not implemented yet.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
-        ViewData["reportContest"] = "false";
     }
 
 }
 
+@{ViewData["YouHaveSubmitted"] = "true";}
+
+@if (Model != null && Model.ContestParticipants != null) foreach(var i in Model.ContestParticipants)
+{
+        if(i.UserIdentity == ViewData["UserIdentity"].ToString())
+        {
+            ViewData["YouHaveSubmitted"] = "false";
+        }
+}
+
+@if (Model != null && Model.ContestSubmissions != null) foreach(var i in Model.ContestSubmissions)
+{
+        if(i.UserIdentity == ViewData["UserIdentity"].ToString())
+        {
+            ViewData["YouHaveSubmitted"] = "true";
+        }
+}
+
+@if(ViewData["YouHaveSubmitted"].ToString() == "false")
+{
+    <br />
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>You did NOT submit your work yet!</strong> Submit your work before time limit expires.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<br />
 <div class="container-fluid card bg-dark text-white">
   <div class="card-body">
     <h5 class="card-title">@Html.DisplayFor(model => model.Title)</h5>
     @{
         if(Model.IsNsfw)
         {
-                                            <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
+                                                <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
         }
         else
         {
-                                            <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
+                                                <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
         }
     }
     <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
@@ -50,11 +76,11 @@
                 {
                     if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                     {
-                                                    <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                     }
                     else
                     {
-                                                    <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                     }
                 }
                 else
@@ -65,17 +91,17 @@
                     {
                         if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                         {
-                                                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                                            <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                         }
                         else
                         {
-                                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                         }
                     }
                     else
                     {
-                                                    <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
-                                                    <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
+                                                        <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
+                                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
                     }
             }
             

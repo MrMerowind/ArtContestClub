@@ -15,6 +15,10 @@
   <ItemGroup>
     <Content Remove="Views\AboutMe\Details.cshtml" />
     <Content Remove="Views\Contests\Edit.cshtml" />
+    <Content Remove="Views\Messages\Delete.cshtml" />
+    <Content Remove="Views\Messages\Details.cshtml" />
+    <Content Remove="Views\Messages\Edit.cshtml" />
+    <Content Remove="Views\Messages\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
