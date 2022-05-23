@@ -13,6 +13,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using ArtContestClub.Data;
+using ArtContestClub.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +35,7 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration Configuration;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -40,7 +43,8 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -49,6 +53,7 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             Configuration = configuration;
+            _context = context;
         }
 
         /// <summary>
@@ -164,6 +169,23 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
                         catch (Exception ex)
                         {
                             throw ex;
+                        }
+                        var userAboutMeData = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == _userManager.FindByEmailAsync(to).Result.Id);
+                        if (userAboutMeData == null)
+                        {
+                            // Testing if user exist
+                            var userLoginData = await _userManager.FindByEmailAsync(to);
+                            if (userLoginData != null)
+                            {
+                                _context.AboutMe.Add(new AboutMe()
+                                {
+                                    UserIdentity = _userManager.FindByEmailAsync(to).Result.Id,
+                                    Fullname = "",
+                                    Caption = "",
+                                    Bio = ""
+                                });
+                                _context.SaveChanges();
+                            }
                         }
                         return RedirectToAction("ConfirmEmail", "Home");
                     }

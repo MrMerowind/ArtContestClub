@@ -26,6 +26,11 @@ namespace ArtContestClub.Controllers
             return View();
         }
 
+        public IActionResult Cookies()
+        {
+            return View();
+        }
+
         public IActionResult ConfirmEmail()
         {
             return View();

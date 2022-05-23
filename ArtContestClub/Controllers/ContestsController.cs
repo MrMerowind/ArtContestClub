@@ -130,7 +130,7 @@ namespace ArtContestClub.Controllers
             }
             return View();
         }
-        public async Task<IActionResult> Index(string? Title, bool? IsNsfw, string SkillLevel, string Branch, int page = 0)
+        public async Task<IActionResult> Index(string? Title, string SkillLevel, string Branch, int page = 0, bool IsNsfw = false)
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
@@ -142,7 +142,6 @@ namespace ArtContestClub.Controllers
             }
             var searchResult = _context.Contests.AsQueryable();
             if (Title == null) Title = "";
-            if (IsNsfw == null) IsNsfw = false;
             if (SkillLevel == null || Branch == null) return View();
             if (page <= 0) page = 0;
 
@@ -260,6 +259,53 @@ namespace ArtContestClub.Controllers
 
             return View(result);
 
+        }
+
+        [Authorize]
+        public async Task<IActionResult> SetPlace(int? id, int? place, string? placeUserIdentity)
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
+            }
+
+            if (id == null || _context.Contests == null || place == null || placeUserIdentity == null)
+            {
+                return NotFound();
+            }
+
+            var contest = await _context.Contests.FirstOrDefaultAsync(m => m.Id == id);
+            if (contest == null)
+            {
+                return NotFound();
+            }
+
+            if(contest.UserIdentity == _userManager.GetUserId(User))
+            {
+                switch(place)
+                {
+                    case 1:
+                        contest.FirstPlaceUserEmail = placeUserIdentity;
+                        break;
+                    case 2:
+                        contest.SecondPlaceUserEmail = placeUserIdentity;
+                        break;
+                    case 3:
+                        contest.ThirdPlaceUserEmail = placeUserIdentity;
+                        break;
+                    default:
+                        return NotFound();
+                }
+            }
+
+            _context.Update(contest);
+            await _context.SaveChangesAsync();
+
+            return Redirect("~/Contests/Details?id=" + id);
         }
 
         // GET: Contests/Details/5

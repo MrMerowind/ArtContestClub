@@ -1,0 +1,69 @@
+﻿@model IEnumerable<ArtContestClub.Models.Friend>
+
+@{
+    ViewData["Title"] = "Friend list";
+}
+
+<br />
+<h3>Your friends</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Friend name
+            </th>
+            <th>
+                Time added
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) 
+{
+            if (ViewData["UserIdentity"].ToString() != item.UserIdentity) continue;
+        <tr>
+            <td>
+                <a class="text-black" asp-controller="AboutMe" asp-action="Index" asp-route-id="@item.FriendIdentity">@ViewData[item.FriendIdentity]</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeAdded)
+            </td>
+            <td>
+                <a asp-action="Delete" asp-route-id="@item.FriendIdentity">Unfriend</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<br />
+<h3>Users that added you to friends</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Friend name
+            </th>
+            <th>
+                Time added
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) 
+{
+            if (ViewData["UserIdentity"].ToString() != item.FriendIdentity) continue;
+        <tr>
+            <td>
+                <a class="text-black" asp-controller="AboutMe" asp-action="Index" asp-route-id="@item.UserIdentity">@ViewData[item.UserIdentity]</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeAdded)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

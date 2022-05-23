@@ -35,13 +35,14 @@
                     <a class="btn btn-warning text-black" role="button" asp-controller="Contests" asp-action="SearchContest">Find contest</a>
                     <a class="btn btn-warning text-black" role="button" asp-controller="AboutMe" asp-action="SearchForUser">Find user</a>
 
-                    <a class="btn btn-primary text-white" role="button" asp-controller="Contests" asp-action="Create contest">Create</a>
+                    <a class="btn btn-primary text-white" role="button" asp-controller="Contests" asp-action="Create">Create contest</a>
                     <a class="btn btn-primary text-white" role="button" asp-controller="Contests" asp-action="MyContests">My contests</a>
                     <a class="btn btn-primary text-white" role="button" asp-controller="Contests" asp-action="JoinedContests">Joined</a>
                     <a class="btn btn-primary text-white" role="button" asp-controller="AboutMe" asp-action="Index" asp-route-id="my">About me</a>
-                    <a class="btn btn-success text-white" role="button">Friends</a>
+                    <a class="btn btn-success text-white" role="button" asp-controller="Friends" asp-action="Index">Friends</a>
                     <a class="btn btn-success text-white" role="button" asp-controller="Messages" asp-action="Create" asp-route-messageTo="">Create message</a>
                     <a class="btn btn-success text-white" role="button" asp-controller="Messages" asp-action="View" asp-route-messageTo="">My messages</a>
+                    <a class="btn btn-danger text-white" role="button" asp-controller="Messages" asp-action="Support" asp-route-messageTo="">Support</a>
                 </div>
             </div>
             <div class="col-lg-10 col-sm-9">

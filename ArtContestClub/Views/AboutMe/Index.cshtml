@@ -7,16 +7,28 @@
 
 @if(Model != null) foreach (var item in Model)
 {
-    if(item.Fullname == "") item.Fullname = "User id: " + item.UserIdentity;
-    if (item.Caption == "") item.Caption = "Empty caption";
-    if (item.Bio == "") item.Bio = "Empty bio";
+    if(item.Fullname == "" || item.Fullname == null) item.Fullname = "User id: " + item.UserIdentity;
+    if (item.Caption == "" || item.Caption == null) item.Caption = "Empty caption";
+    if (item.Bio == "" || item.Bio == null) item.Bio = "Empty bio";
     <div class="card mx-auto" style="width: 50%">
         <div class="card-body">
-            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Fullname)</h5>
+            <h5 class="card-title">@ViewData[item.UserIdentity].ToString()</h5>
             <h6 class="card-subtitle mb-2 text-muted">@Html.DisplayFor(modelItem => item.Caption)</h6>
             
             <p class="card-text">@Html.DisplayFor(modelItem => item.Bio)</p>
             <a asp-controller="Messages" asp-action="Create" asp-route-messageTo="@item.UserIdentity" class="btn btn-success">Send message</a>
+            @if (item.UserIdentity != ViewData["UserIdentity"].ToString())
+            {
+                if(ViewData["IsFriend"].ToString() != "true")
+                {
+                    <a class="btn btn-success" asp-controller="Friends" asp-action="Create" asp-route-id="@item.UserIdentity">Add friend</a>
+                }
+                else
+                {
+                    <a class="btn btn-danger" asp-controller="Friends" asp-action="Delete" asp-route-id="@item.UserIdentity">Remove friend</a>
+                }
+                    
+            }
             @if(item.UserIdentity == ViewData["UserIdentity"].ToString())
             {
                 <a asp-controller="AboutMe" asp-action="Edit" class="btn btn-warning">Edit information</a>

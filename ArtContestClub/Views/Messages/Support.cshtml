@@ -1,0 +1,30 @@
+﻿@model ArtContestClub.Models.Message;
+
+@{
+    ViewData["Title"] = "Write to support";
+}
+
+<h1>Write to support</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="CreateSubmit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">Title</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label">Message</label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <input hidden asp-for="To" class="form-control" value="Support"/>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Send message" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -203,6 +203,30 @@ namespace ArtContestClub.Data.Migrations
                     b.ToTable("ContestSubmissions");
                 });
 
+            modelBuilder.Entity("ArtContestClub.Models.Friend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("FriendIdentity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TimeAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserIdentity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Friends");
+                });
+
             modelBuilder.Entity("ArtContestClub.Models.Message", b =>
                 {
                     b.Property<int>("Id")

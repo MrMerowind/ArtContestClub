@@ -23,6 +23,27 @@ namespace ArtContestClub.Controllers
             _userManager = userManager;
         }
 
+        public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
+        {
+
+            var person = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
+            string result = "Username";
+            if (person == null || (person.Fullname == null || person.Fullname == ""))
+            {
+                var person2 = _userManager.FindByIdAsync(userIdentity);
+                if (person2 != null && person2.Result != null)
+                {
+                    result = person2.Result.UserName.Split('@')[0];
+                }
+
+            }
+            else
+            {
+                result = person.Fullname;
+            }
+            return result;
+        }
+
 
         // GET: AboutMe
         public async Task<IActionResult> Index(string? id)
@@ -48,26 +69,24 @@ namespace ArtContestClub.Controllers
                 }
             }
 
-            var userAboutMeData = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == id);
-            if (userAboutMeData == null)
+            
+            var userFriend = _context.Friends
+                .FirstOrDefault(p => p.UserIdentity == _userManager.GetUserId(User) && p.FriendIdentity == id);
+            if (userFriend == null)
             {
-                // Testing if user exist
-                var userLoginData = await _userManager.FindByIdAsync(id);
-                if(userLoginData == null)
-                {
-                    _context.AboutMe.Add(new AboutMe()
-                    {
-                        UserIdentity = id,
-                        Fullname = "",
-                        Caption = "",
-                        Bio = ""
-                    });
-                    _context.SaveChanges();
-                }
+                ViewData["IsFriend"] = "false";
+            }
+            else
+            {
+                ViewData["IsFriend"] = "true";
             }
             var userAboutMeDataResult = await _context.AboutMe.Where(p => p.UserIdentity == id).ToListAsync();
 
-            if (userAboutMeDataResult.Count > 0) return View(userAboutMeDataResult);
+            if(userAboutMeDataResult != null)
+            foreach(var a in userAboutMeDataResult)
+                ViewData[a.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(a.UserIdentity.ToString());
+
+            if (userAboutMeDataResult != null && userAboutMeDataResult.Count > 0) return View(userAboutMeDataResult);
             else return Redirect("SearchForUser?notFound=true");
 
 

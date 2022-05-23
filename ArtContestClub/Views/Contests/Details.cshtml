@@ -1,16 +1,16 @@
 ﻿@model ArtContestClub.Models.Contest
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Contest details";
 }
 
 @{
     if(ViewData["alreadySubmitted"] != null && ViewData["alreadySubmitted"].ToString().Equals("true"))
     {
-        <br />
+    <br />
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Error!</strong> You can not leave contest after submitting art.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong>Error!</strong> You can not leave contest after submitting art.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     }
 
@@ -21,8 +21,8 @@
     {
     <br />
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Error!</strong> This feature is not implemented yet.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong>Error!</strong> This feature is not implemented yet.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     }
 
@@ -62,11 +62,11 @@
     @{
         if(Model.IsNsfw)
         {
-                                                <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
+                                                            <h6 class="card-subtitle mb-2 text-muted">You can post NSFW</h6>
         }
         else
         {
-                                                <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
+                                                            <h6 class="card-subtitle mb-2 text-muted">You can NOT post NSFW</h6>
         }
     }
     <p class="card-text">@Html.DisplayFor(model => model.Description)</p>
@@ -76,11 +76,11 @@
                 {
                     if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                     {
-                                                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                                                    <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                     }
                     else
                     {
-                                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                                                    <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                     }
                 }
                 else
@@ -91,17 +91,17 @@
                     {
                         if(Model.MaxParticipants <= Model.CurrentParticipants || (Model.Deadline != null && Model.Deadline <= DateTime.Now))
                         {
-                                                            <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
+                                                                        <a class="btn btn-dark mb-3" role="link" aria-disabled="true">Join contest</a>
                         }
                         else
                         {
-                                                            <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
+                                                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="Join" asp-route-id="@Model?.Id">Join contest</a>
                         }
                     }
                     else
                     {
-                                                        <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
-                                                        <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
+                                                                    <a class="btn btn-outline-warning mb-3" asp-controller="Contests" asp-action="Leave" asp-route-id="@Model?.Id">Leave contest</a>
+                                                                    <a class="btn btn-success mb-3" asp-controller="Contests" asp-action="SubmitArt" asp-route-id="@Model?.Id">Submit art</a>
                     }
             }
             
@@ -121,14 +121,98 @@
   </div>
 </div>
 
-
-
-
 @if (Model != null && Model.ContestSubmissions != null) foreach(var i in Model.ContestSubmissions)
 {
+        if (Model.FirstPlaceUserEmail != i.UserIdentity) continue;
+        <br />
+    <center>
+        <div class="card w-75 bg-secondary text-white">
+        
+            <div class="card-body">
+                <h4 class="card-title text-center" style="background-color: darkblue;color: yellow">First place</h4>
+                <h5 class="card-title text-center">@i.Title</h5>
+                <h6 class="card-subtitle text-center">Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-id="@i.UserIdentity">@ViewData[i.UserIdentity]</a></h6>
+                <br />
+                <center>
+                    <img src="@i.ArtLink" class="card-img" style="width: auto; max-height:600px">
+                </center>
+                @if(Model.UserIdentity == ViewData["UserIdentity"].ToString())
+                {
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
+                }
+                    
+            </div>
+        </div>
+    </center>
+}
+@if (Model != null && Model.ContestSubmissions != null) foreach(var i in Model.ContestSubmissions)
+{
+    if (Model.SecondPlaceUserEmail != i.UserIdentity) continue;
+    if (Model.SecondPlaceUserEmail == Model.FirstPlaceUserEmail) continue;
     <br />
     <center>
         <div class="card w-75 bg-secondary text-white">
+            <div class="card-body">
+                <h4 class="card-title text-center" style="background-color: darkblue;color: dimgray">Second place</h4>
+                <h5 class="card-title text-center">@i.Title</h5>
+                <h6 class="card-subtitle text-center">Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-id="@i.UserIdentity">@ViewData[i.UserIdentity]</a></h6>
+                <br />
+                <center>
+                    <img src="@i.ArtLink" class="card-img" style="width: auto; max-height:600px">
+                </center>
+                @if(Model.UserIdentity == ViewData["UserIdentity"].ToString())
+                {
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
+                }
+                    
+            </div>
+        </div>
+    </center>
+}
+
+@if (Model != null && Model.ContestSubmissions != null) foreach(var i in Model.ContestSubmissions)
+{
+    if (Model.ThirdPlaceUserEmail != i.UserIdentity) continue;
+    if (Model.ThirdPlaceUserEmail == Model.FirstPlaceUserEmail) continue;
+    if (Model.ThirdPlaceUserEmail == Model.SecondPlaceUserEmail) continue;
+    <br />
+    <center>
+        <div class="card w-75 bg-secondary text-white">
+        
+            <div class="card-body">
+                <h4 class="card-title text-center" style="background-color: darkblue; color: saddlebrown">Third place</h4>
+                <h5 class="card-title text-center">@i.Title</h5>
+                <h6 class="card-subtitle text-center">Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-id="@i.UserIdentity">@ViewData[i.UserIdentity]</a></h6>
+                <br />
+                <center>
+                    <img src="@i.ArtLink" class="card-img" style="width: auto; max-height:600px">
+                </center>
+                @if(Model.UserIdentity == ViewData["UserIdentity"].ToString())
+                {
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
+                }
+                    
+            </div>
+        </div>
+    </center>
+}
+
+                    
+@if (Model != null && Model.ContestSubmissions != null) foreach(var i in Model.ContestSubmissions)
+{
+    if (Model.FirstPlaceUserEmail == i.UserIdentity) continue;
+    if (Model.SecondPlaceUserEmail == i.UserIdentity) continue;
+    if (Model.ThirdPlaceUserEmail == i.UserIdentity) continue;
+    <br />
+    <center>
+        <div class="card w-75 bg-secondary text-white">
+        
             <div class="card-body">
                 <h5 class="card-title text-center">@i.Title</h5>
                 <h6 class="card-subtitle text-center">Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-id="@i.UserIdentity">@ViewData[i.UserIdentity]</a></h6>
@@ -136,6 +220,13 @@
                 <center>
                     <img src="@i.ArtLink" class="card-img" style="width: auto; max-height:600px">
                 </center>
+                @if(Model.UserIdentity == ViewData["UserIdentity"].ToString())
+                {
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
+                    <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
+                }
+                    
             </div>
         </div>
     </center>

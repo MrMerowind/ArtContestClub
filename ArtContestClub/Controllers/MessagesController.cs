@@ -79,6 +79,31 @@ namespace ArtContestClub.Controllers
             return View(result);
         }
 
+        public async Task<IActionResult> Support(string? messageTo)
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+
+            if (messageTo != null)
+            {
+                ViewData["MessageTo"] = messageTo;
+            }
+            else
+            {
+                ViewData["MessageTo"] = "";
+            }
+
+            return View();
+
+
+        }
+
         [Authorize]
         public async Task<IActionResult> Create(string? messageTo)
         {
