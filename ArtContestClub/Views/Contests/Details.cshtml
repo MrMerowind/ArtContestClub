@@ -28,6 +28,17 @@
 
 }
 
+@{
+    if(ViewData["UserRankToLowToJoin"] != null && ViewData["UserRankToLowToJoin"].ToString() == "true")
+    {
+    <br />
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> You need to wait until your last joined contest ends or upgrade your rank.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    }
+}
+
 @{ViewData["YouHaveSubmitted"] = "true";}
 
 @if (Model != null && Model.ContestParticipants != null) foreach(var i in Model.ContestParticipants)

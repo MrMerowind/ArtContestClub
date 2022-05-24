@@ -27,7 +27,7 @@ namespace ArtContestClub.Controllers
         public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
         {
 
-            var person =_context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
+            var person = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
             string result = "Username";
             if(person == null || (person.Fullname == null || person.Fullname == ""))
             {
@@ -45,6 +45,83 @@ namespace ArtContestClub.Controllers
             return result;
         }
 
+        public string GetRank(string userIdentity)
+        {
+            var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
+            if (personRank == null)
+            {
+                return "User";
+            }
+            else
+            {
+                return personRank.Name;
+            }
+        }
+
+        public bool IsAbleToJoinContest(string userIdentity)
+        {
+            var lastContestJoined = _context.ContestParticipants.Where(p => p.UserIdentity == userIdentity).OrderByDescending(p => p.Id).FirstOrDefault();
+            if (lastContestJoined == null) return true;
+            else
+            {
+                var thatContest = _context.Contests.Where(p => p.Id == lastContestJoined.ContestId && p.IsDeleted == false && p.IsBanned == false).FirstOrDefault();
+                if(thatContest == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    if(thatContest.Deadline > DateTime.Now)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        public bool IsAbleToCreateContest(string userIdentity)
+        {
+            var lastContest = _context.Contests.Where(p => p.UserIdentity == userIdentity).OrderByDescending(p => p.Id).FirstOrDefault();
+            if(lastContest == null) return true;
+            if(lastContest.Deadline > DateTime.Now)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public int RankToNumber(string rank)
+        {
+            switch(rank)
+            {
+                case "Admin":
+                    return 5;
+                case "Mod":
+                    return 4;
+                case "Premium":
+                    return 3;
+                case "Vip":
+                    return 2;
+                case "User":
+                    return 1;
+                case "Banned":
+                    return 0;
+                default:
+                    return 0;
+            }
+        }
+
         [Authorize]
         public async Task<IActionResult> MyContests()
         {
@@ -60,8 +137,8 @@ namespace ArtContestClub.Controllers
             var contests = _context.Contests.Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.IsDeleted == false).ToList();
             foreach(var c in contests)
             {
-                c.ContestSubmissions = _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false &&(p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User))) ).ToList();
+                c.ContestSubmissions = await _context.ContestSubmissions
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false &&(p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User))) ).ToListAsync();
             }
 
 
@@ -144,6 +221,8 @@ namespace ArtContestClub.Controllers
             if (Title == null) Title = "";
             if (SkillLevel == null || Branch == null) return View();
             if (page <= 0) page = 0;
+
+            if (Title.Length > 100)  Title = Title.Substring(0, 100);
 
             if (Title != "")
             {
@@ -270,7 +349,7 @@ namespace ArtContestClub.Controllers
             }
             else
             {
-                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
+                ViewData["UserIdentity"] = "User not loged in";
             }
 
             if (id == null || _context.Contests == null || place == null || placeUserIdentity == null)
@@ -283,6 +362,8 @@ namespace ArtContestClub.Controllers
             {
                 return NotFound();
             }
+
+            if (placeUserIdentity.Length > 50)  placeUserIdentity = placeUserIdentity.Substring(0, 50);
 
             if(contest.UserIdentity == _userManager.GetUserId(User))
             {
@@ -309,7 +390,7 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Contests/Details/5
-        public async Task<IActionResult> Details(int? id, int alreadySubmitted = 0, int reportContest = 0)
+        public async Task<IActionResult> Details(int? id, int alreadySubmitted = 0, int reportContest = 0, bool userRankToLowToJoin = false)
         {
             if(User.Identity != null && User.Identity.IsAuthenticated)
             {
@@ -317,7 +398,16 @@ namespace ArtContestClub.Controllers
             }
             else
             {
-                ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+
+            if(userRankToLowToJoin)
+            {
+                ViewData["UserRankToLowToJoin"] = "true";
+            }
+            else
+            {
+                ViewData["UserRankToLowToJoin"] = "false";
             }
             
             if (id == null || _context.Contests == null)
@@ -412,6 +502,10 @@ namespace ArtContestClub.Controllers
                 ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
             }
             if (Title == null || ArtLink == null || ContestId == null) return Redirect("~/Contests/Details?id=" + ContestId);
+
+            if (Title.Length > 100) Title = Title.Substring(0, 100);
+            if (ArtLink.Length > 150) ArtLink = ArtLink.Substring(0, 150);
+
             ContestSubmission contestSubmission = new ContestSubmission()
             {
                 Title = Title,
@@ -423,7 +517,7 @@ namespace ArtContestClub.Controllers
                 IsBanned = false,
             };
 
-            var contest = _context.Contests.FirstOrDefault(m => m.Id == ContestId);
+            var contest = await _context.Contests.FirstOrDefaultAsync(m => m.Id == ContestId);
             if (contest != null && contest.IsDeleted == false && contest.IsBanned == false &&
                 (contest.Deadline == null || (contest.Deadline != null && contest.Deadline > DateTime.Now)) )
             {
@@ -472,6 +566,8 @@ namespace ArtContestClub.Controllers
                 contest.Description = "Empty";
             }
 
+            int userRank = RankToNumber(GetRank(contest.UserIdentity));
+
             switch (contest.SkillLevel)
             {
                 case "1":
@@ -505,26 +601,23 @@ namespace ArtContestClub.Controllers
                 case 10:
                     break;
                 case 25:
-                    if (!(User.IsInRole("Premium") ||
-                        User.IsInRole("Admin") ||
-                        User.IsInRole("Mod")))
+                    if (userRank < 3)
                     {
+                        ViewData["UserRankToLow"] = "true";
                         return View(contest);
                     }
                     break;
                 case 50:
-                    if(!(User.IsInRole("Premium") ||
-                        User.IsInRole("Admin") ||
-                        User.IsInRole("Mod")))
+                    if(userRank < 3)
                     {
+                        ViewData["UserRankToLow"] = "true";
                         return View(contest);
                     }
                     break;
                 case 100:
-                    if (!(User.IsInRole("Premium") ||
-                        User.IsInRole("Admin") ||
-                        User.IsInRole("Mod")))
+                    if (userRank < 3)
                     {
+                        ViewData["UserRankToLow"] = "true";
                         return View(contest);
                     }
                     break;
@@ -572,8 +665,21 @@ namespace ArtContestClub.Controllers
             contest.CurrentParticipants = 0;
             contest.Created = DateTime.Now;
 
+            if (contest.Title.Length > 100) contest.Title = contest.Title.Substring(0, 100);
+            if (contest.Description.Length > 500) contest.Description = contest.Description.Substring(0, 500);
+
             contest.IsBanned = false;
             contest.IsDeleted = false;
+
+            // If user is premium+ or didnt create then can create contest
+            bool isAbleToCreate = userRank >= 3 || IsAbleToCreateContest(_userManager.GetUserId(User));
+
+            if (!isAbleToCreate)
+            {
+                ViewData["UserRankToLowToCreate"] = "true";
+                return View(contest);
+            }
+
             if ( true || ModelState.IsValid)
             {
                 _context.Contests.Add(contest);
@@ -614,6 +720,16 @@ namespace ArtContestClub.Controllers
                     {
                         return Redirect("~/Contests/Details?id=" + id);
                     }
+
+                    int userRank = RankToNumber(GetRank(_userManager.GetUserId(User)));
+                    // If user is vip+ or last contest ended then can join
+                    bool isAbleToJoin = userRank >= 2 || IsAbleToJoinContest(_userManager.GetUserId(User));
+
+                    if (!isAbleToJoin)
+                    {
+                        return Redirect("~/Contests/Details?id=" + id + "&userRankToLowToJoin=true");
+                    }
+
                     try
                     {
                         _context.ContestParticipants.Add(new ContestParticipant
@@ -666,8 +782,8 @@ namespace ArtContestClub.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Contests'  is null.");
             }
             var contest = _context.Contests.FirstOrDefault(p => p.Id == id);
-            var contestParticipant = _context.ContestParticipants
-                .FirstOrDefault(p => p.ContestId == id && p.UserIdentity == _userManager.GetUserId(User));
+            var contestParticipant = await _context.ContestParticipants
+                .FirstOrDefaultAsync(p => p.ContestId == id && p.UserIdentity == _userManager.GetUserId(User));
 
 
             bool userAlreadySubmittedArt = false;

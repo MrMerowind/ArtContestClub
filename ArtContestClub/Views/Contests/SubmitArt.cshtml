@@ -22,12 +22,12 @@
                 <input hidden asp-for="ContestId" value="@Model.Id" />
                 <div class="form-group">
                     <label asp-for="Title" class="control-label">Title</label>
-                    <input id="TitleInputForSearching" asp-for="Title" class="form-control" />
+                    <input id="TitleInputForSearching" asp-for="Title" class="form-control" maxlength="100"/>
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="ArtLink" class="control-label">Link to art</label>
-                    <input asp-for="ArtLink" class="form-control" />
+                    <input asp-for="ArtLink" class="form-control" maxlength="150"/>
                     <span asp-validation-for="ArtLink" class="text-danger"></span>
                 </div>
                 <br/>

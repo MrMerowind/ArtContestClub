@@ -92,6 +92,7 @@ namespace ArtContestClub.Controllers
 
             if (messageTo != null)
             {
+                if (messageTo.Length > 50)  messageTo = messageTo.Substring(0, 50);
                 ViewData["MessageTo"] = messageTo;
             }
             else
@@ -118,6 +119,8 @@ namespace ArtContestClub.Controllers
 
             if (messageTo != null)
             {
+                if (messageTo.Length > 50)  messageTo = messageTo.Substring(0, 50);
+
                 ViewData["MessageTo"] = messageTo;
             }
             else
@@ -139,6 +142,11 @@ namespace ArtContestClub.Controllers
             message.IsDeleted = false;
             message.From = _userManager.GetUserId(User);
             if (message.To == null || message.Title == null || message.Content == null) return RedirectToAction("Create", message);
+
+            if (message.To.Length > 50)  message.To = message.To.Substring(0, 50);
+            if (message.Title.Length > 100)  message.Title = message.Title.Substring(0, 100);
+            if (message.Content.Length > 500)  message.Content = message.Content.Substring(0, 500);
+
             if (true)
             {
                 _context.Add(message);
@@ -172,7 +180,7 @@ namespace ArtContestClub.Controllers
 
             await _context.SaveChangesAsync();
 
-            ViewData[message.From] = GetUsernameOrEmailFromUserIdentity(message.From.ToString());
+            // ViewData[message.From] = GetUsernameOrEmailFromUserIdentity(message.From.ToString());
 
             return RedirectToAction(nameof(View));
         }

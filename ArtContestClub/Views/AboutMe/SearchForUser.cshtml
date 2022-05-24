@@ -16,7 +16,7 @@
             <div asp-validation-summary="None" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="UserIdentity" class="control-label">User email or Id</label>
-                <input asp-for="UserIdentity" class="form-control" />
+                <input asp-for="UserIdentity" class="form-control" maxlength="50"/>
                 <span asp-validation-for="UserIdentity" class="text-danger"></span>
             </div>
             <div class="form-group">

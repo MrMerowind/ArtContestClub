@@ -70,8 +70,8 @@ namespace ArtContestClub.Controllers
             }
 
             
-            var userFriend = _context.Friends
-                .FirstOrDefault(p => p.UserIdentity == _userManager.GetUserId(User) && p.FriendIdentity == id);
+            var userFriend = await _context.Friends
+                .FirstOrDefaultAsync(p => p.UserIdentity == _userManager.GetUserId(User) && p.FriendIdentity == id);
             if (userFriend == null)
             {
                 ViewData["IsFriend"] = "false";
@@ -128,6 +128,8 @@ namespace ArtContestClub.Controllers
                 return Redirect("~Home/Index");
             }
 
+            if (UserIdentity.Length > 50)  UserIdentity = UserIdentity.Substring(0, 50);
+
             /// TU NIE DZIAŁA
             var aboutMe = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == UserIdentity);
             string aboutMeResultId = "NotFound";
@@ -136,8 +138,8 @@ namespace ArtContestClub.Controllers
                 var userForUserManager = _userManager.Users.FirstOrDefault(p => p.Email == UserIdentity);
                 if(userForUserManager != null)
                 {
-                    aboutMe = _context.AboutMe
-                        .FirstOrDefault(p => p.UserIdentity == userForUserManager.Id);
+                    aboutMe = await _context.AboutMe
+                        .FirstOrDefaultAsync(p => p.UserIdentity == userForUserManager.Id);
                     aboutMeResultId = aboutMe.UserIdentity;
                 }
             }
@@ -172,7 +174,7 @@ namespace ArtContestClub.Controllers
                 return Redirect("~AboutMe/Index");
             }
 
-            var aboutMe = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == ViewData["UserIdentity"].ToString());
+            var aboutMe = await _context.AboutMe.FirstOrDefaultAsync(p => p.UserIdentity == ViewData["UserIdentity"].ToString());
             if (aboutMe == null)
             {
                 return Redirect("~AboutMe/Index");
@@ -200,6 +202,14 @@ namespace ArtContestClub.Controllers
             {
                 return NotFound();
             }
+
+            if (aboutMe.Fullname == null) aboutMe.Fullname = "";
+            if (aboutMe.Caption == null) aboutMe.Caption = "";
+            if (aboutMe.Bio == null) aboutMe.Bio = "";
+
+            if (aboutMe.Fullname.Length > 50) aboutMe.Fullname = aboutMe.Fullname.Substring(0, 50);
+            if (aboutMe.Caption.Length > 50) aboutMe.Caption = aboutMe.Caption.Substring(0, 50);
+            if (aboutMe.Bio.Length > 500) aboutMe.Bio = aboutMe.Bio.Substring(0, 500);
 
             aboutMe.UserIdentity = ViewData["UserIdentity"].ToString();
 

@@ -4,20 +4,40 @@
     ViewData["Title"] = "Create";
 }
 
+@if(ViewData["UserRankToLowToCreate"] != null && ViewData["UserRankToLowToCreate"].ToString() == "true")
+{
+    <br />
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> You need to wait until your last contest ends or upgrade your rank.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if(ViewData["UserRankToLow"] != null && ViewData["UserRankToLow"].ToString() == "true")
+{
+    <br />
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> Your rank is too low to create contest with more than 10 participants.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+
 <h1>Create contest</h1>
-<hr />
+<br />
 <div class="row">
     <div class="col-md-12">
         <form asp-action="Create" class="form-floating">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label">Title</label>
-                <input asp-for="Title" class="form-control" />
+                <input asp-for="Title" class="form-control" maxlength="100"/>
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-outline">
               <label class="form-label" asp-for="Description">Description</label>
-              <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+              <textarea asp-for="Description" class="form-control" rows="5" maxlength="500"></textarea>
               <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-check">
