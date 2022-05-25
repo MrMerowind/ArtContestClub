@@ -23,6 +23,12 @@
     <Content Remove="Views\Messages\Details.cshtml" />
     <Content Remove="Views\Messages\Edit.cshtml" />
     <Content Remove="Views\Messages\Index.cshtml" />
+    <Content Remove="Views\Ranks\Delete.cshtml" />
+    <Content Remove="Views\Ranks\Details.cshtml" />
+    <Content Remove="Views\Ranks\Edit.cshtml" />
+    <Content Remove="Views\Support\Delete.cshtml" />
+    <Content Remove="Views\Support\Details.cshtml" />
+    <Content Remove="Views\Support\Edit.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
