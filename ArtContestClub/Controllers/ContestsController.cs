@@ -26,6 +26,7 @@ namespace ArtContestClub.Controllers
 
         public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
         {
+            if (userIdentity == "Support") return "Support";
 
             var person = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
             string result = "Username";
@@ -123,7 +124,7 @@ namespace ArtContestClub.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> MyContests()
+        public async Task<IActionResult> MyContests(string? userId)
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
@@ -134,12 +135,28 @@ namespace ArtContestClub.Controllers
                 ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
             }
 
-            var contests = _context.Contests.Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.IsDeleted == false).ToList();
-            foreach(var c in contests)
+            int rank = RankToNumber(GetRank(ViewData["UserIdentity"].ToString()));
+
+            if (userId == null || userId == "my") userId = _userManager.GetUserId(User);
+
+            var contests = _context.Contests.Where(p => p.UserIdentity == userId && p.IsDeleted == false).ToList();
+            if(rank < 4)
             {
-                c.ContestSubmissions = await _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false &&(p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User))) ).ToListAsync();
+                foreach (var c in contests)
+                {
+                    c.ContestSubmissions = await _context.ContestSubmissions
+                        .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
+                }
             }
+            else
+            {
+                foreach (var c in contests)
+                {
+                    c.ContestSubmissions = await _context.ContestSubmissions
+                        .Where(p => p.ContestId == c.Id && p.IsDeleted == false).ToListAsync();
+                }
+            }
+            
 
 
             if (contests != null)
@@ -157,7 +174,7 @@ namespace ArtContestClub.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> JoinedContests()
+        public async Task<IActionResult> JoinedContests(string? userId)
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
@@ -167,19 +184,24 @@ namespace ArtContestClub.Controllers
             {
                 ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
             }
+
+            if (userId == null || userId == "my") userId = _userManager.GetUserId(User);
+
+            int rank = RankToNumber(GetRank(ViewData["UserIdentity"].ToString()));
+
             var joinedContests = _context.ContestParticipants
-                .Where(p => p.UserIdentity == _userManager.GetUserId(User))
+                .Where(p => p.UserIdentity == userId)
                 .Select(p => p.ContestId);
 
             
             var result = await _context.Contests
                 .Where(p => joinedContests.Contains(p.Id))
-                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
+                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)) || rank >= 4)).ToListAsync();
 
             foreach (var c in result)
             {
                 c.ContestSubmissions = await _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)) || rank >= 4)).ToListAsync();
             }
 
             if (result != null)
@@ -217,6 +239,10 @@ namespace ArtContestClub.Controllers
             {
                 ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
             }
+
+            int rank = RankToNumber(GetRank(ViewData["UserIdentity"].ToString()));
+
+
             var searchResult = _context.Contests.AsQueryable();
             if (Title == null) Title = "";
             if (SkillLevel == null || Branch == null) return View();
@@ -310,9 +336,9 @@ namespace ArtContestClub.Controllers
             }
 
 
-            searchResult = searchResult.Where(p => p.IsDeleted.Equals(false));
+            searchResult = searchResult.Where(p => p.IsDeleted == false);
 
-            searchResult = searchResult.Where(p => p.IsBanned.Equals(false) || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)));
+            searchResult = searchResult.Where(p => p.IsBanned == false|| (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)) || rank >= 4);
 
             searchResult = searchResult.Skip(20 * page);
             
@@ -401,7 +427,9 @@ namespace ArtContestClub.Controllers
                 ViewData["UserIdentity"] = "User not loged in";
             }
 
-            if(userRankToLowToJoin)
+            int rank = RankToNumber(GetRank(ViewData["UserIdentity"].ToString()));
+
+            if (userRankToLowToJoin)
             {
                 ViewData["UserRankToLowToJoin"] = "true";
             }
@@ -409,7 +437,16 @@ namespace ArtContestClub.Controllers
             {
                 ViewData["UserRankToLowToJoin"] = "false";
             }
-            
+
+            if (rank >= 4)
+            {
+                ViewData["SupportConfirmed"] = "true";
+            }
+            else
+            {
+                ViewData["SupportConfirmed"] = "false";
+            }
+
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
@@ -443,7 +480,7 @@ namespace ArtContestClub.Controllers
                 .Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.ContestId == id).ToListAsync();
 
             contest.ContestSubmissions = await _context.ContestSubmissions.Where(p => p.ContestId == id && p.IsDeleted == false
-            && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
+            && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)) || rank >= 4)).ToListAsync();
 
 
             ViewData[contest.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(contest.UserIdentity.ToString());
@@ -469,6 +506,12 @@ namespace ArtContestClub.Controllers
             {
                 ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
             }
+
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 1)
+            {
+                return RedirectToAction("YouAreBanned", "Ranks");
+            }
+
             return View();
         }
 
@@ -505,6 +548,11 @@ namespace ArtContestClub.Controllers
 
             if (Title.Length > 100) Title = Title.Substring(0, 100);
             if (ArtLink.Length > 150) ArtLink = ArtLink.Substring(0, 150);
+
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 1)
+            {
+                return RedirectToAction("YouAreBanned", "Ranks");
+            }
 
             ContestSubmission contestSubmission = new ContestSubmission()
             {
@@ -554,6 +602,7 @@ namespace ArtContestClub.Controllers
             {
                 ViewData["UserIdentity"] = ViewData["UserIdentity"] = "User not loged in";
             }
+
             contest.UserIdentity = ViewData["UserIdentity"].ToString();
 
             if (contest.Title == "" || contest.Title == null)
@@ -567,6 +616,10 @@ namespace ArtContestClub.Controllers
             }
 
             int userRank = RankToNumber(GetRank(contest.UserIdentity));
+            if (userRank < 1)
+            {
+                return RedirectToAction("YouAreBanned", "Ranks");
+            }
 
             switch (contest.SkillLevel)
             {
@@ -703,6 +756,11 @@ namespace ArtContestClub.Controllers
             if (id == null || _context.Contests == null)
             {
                 return NotFound();
+            }
+
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 1)
+            {
+                return RedirectToAction("YouAreBanned", "Ranks");
             }
 
             if (_context.Contests == null)

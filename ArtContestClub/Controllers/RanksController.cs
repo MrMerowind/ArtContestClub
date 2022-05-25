@@ -7,47 +7,141 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ArtContestClub.Data;
 using ArtContestClub.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ArtContestClub.Controllers
 {
     public class RanksController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public RanksController(ApplicationDbContext context)
+        public RanksController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
+        }
+
+        public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
+        {
+            if (userIdentity == "Support") return "Support";
+
+            var person = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
+            string result = "Username";
+            if (person == null || (person.Fullname == null || person.Fullname == ""))
+            {
+                var person2 = _userManager.FindByIdAsync(userIdentity);
+                if (person2 != null && person2.Result != null)
+                {
+                    result = person2.Result.UserName.Split('@')[0];
+                }
+
+            }
+            else
+            {
+                result = person.Fullname;
+            }
+            return result;
+        }
+
+        public string GetRank(string userIdentity)
+        {
+            var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
+            if (personRank == null)
+            {
+                return "User";
+            }
+            else
+            {
+                return personRank.Name;
+            }
+        }
+
+        public int RankToNumber(string rank)
+        {
+            switch (rank)
+            {
+                case "Admin":
+                    return 5;
+                case "Mod":
+                    return 4;
+                case "Premium":
+                    return 3;
+                case "Vip":
+                    return 2;
+                case "User":
+                    return 1;
+                case "Banned":
+                    return 0;
+                default:
+                    return 0;
+            }
         }
 
         // GET: Ranks
         public async Task<IActionResult> Index()
         {
-              return _context.Ranks != null ? 
-                          View(await _context.Ranks.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Ranks'  is null.");
+            string userId = _userManager.GetUserId(User);
+            int rank = RankToNumber(GetRank(userId));
+
+            if(rank >= 5)
+            {
+                ViewData["CreateRank"] = "true";
+            }
+            else
+            {
+                ViewData["CreateRank"] = "false";
+            }
+
+            var ranks = await _context.Ranks.Where(p => p.User == userId).ToListAsync();
+
+
+            return View(ranks);
         }
 
-        // GET: Ranks/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [Authorize]
+        public async Task<IActionResult> YouAreBanned()
         {
-            if (id == null || _context.Ranks == null)
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
             }
 
-            var rank = await _context.Ranks
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (rank == null)
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 1)
             {
-                return NotFound();
+                ViewData["YouAreBanned"] = "true";
+            }
+            else
+            {
+                ViewData["YouAreBanned"] = "false";
             }
 
-            return View(rank);
+            return View();
         }
 
         // GET: Ranks/Create
         public IActionResult Create()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 5) return NotFound();
+
             return View();
         }
 
@@ -58,6 +152,19 @@ namespace ArtContestClub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,CreateTime,Expires,User")] Rank rank)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+
+            rank.CreateTime = DateTime.Now;
+
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 5) return NotFound();
+
             if (ModelState.IsValid)
             {
                 _context.Add(rank);

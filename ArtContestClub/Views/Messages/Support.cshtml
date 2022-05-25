@@ -28,3 +28,10 @@
         </form>
     </div>
 </div>
+
+@if(ViewData["Support"].ToString() == "true")
+{
+    <br />
+    <a class="btn btn-warning text-white" asp-controller="Support" asp-action="Index">Messages to support</a>
+    <a class="btn btn-warning text-white" asp-controller="Support" asp-action="CreateMessage">Create message from support</a>
+}

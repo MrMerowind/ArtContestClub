@@ -25,6 +25,7 @@ namespace ArtContestClub.Controllers
 
         public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
         {
+            if (userIdentity == "Support") return "Support";
 
             var person = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
             string result = "Username";
@@ -44,6 +45,43 @@ namespace ArtContestClub.Controllers
             return result;
         }
 
+        public string GetRank(string userIdentity)
+        {
+            var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
+            if (personRank == null)
+            {
+                return "User";
+            }
+            else
+            {
+                return personRank.Name;
+            }
+        }
+
+        public int RankToNumber(string rank)
+        {
+            switch (rank)
+            {
+                case "Admin":
+                    return 5;
+                case "Mod":
+                    return 4;
+                case "Premium":
+                    return 3;
+                case "Vip":
+                    return 2;
+                case "User":
+                    return 1;
+                case "Banned":
+                    return 0;
+                default:
+                    return 0;
+            }
+        }
 
         // GET: AboutMe
         public async Task<IActionResult> Index(string? id)
@@ -69,7 +107,20 @@ namespace ArtContestClub.Controllers
                 }
             }
 
-            
+            ViewData["UserRank"] = GetRank(id);
+            ViewData["ViewerRank"] = GetRank(ViewData["UserIdentity"].ToString());
+
+            if (RankToNumber(ViewData["ViewerRank"].ToString()) >= 4)
+            {
+                ViewData["SupportConfirmed"] = "true";
+            }
+            else
+            {
+                ViewData["SupportConfirmed"] = "false";
+            }
+
+
+
             var userFriend = await _context.Friends
                 .FirstOrDefaultAsync(p => p.UserIdentity == _userManager.GetUserId(User) && p.FriendIdentity == id);
             if (userFriend == null)
@@ -85,6 +136,16 @@ namespace ArtContestClub.Controllers
             if(userAboutMeDataResult != null)
             foreach(var a in userAboutMeDataResult)
                 ViewData[a.UserIdentity.ToString()] = GetUsernameOrEmailFromUserIdentity(a.UserIdentity.ToString());
+
+            if(RankToNumber(GetRank(id)) < 1)
+            {
+                ViewData["UserIsBanned"] = "true";
+            }
+            else
+            {
+                ViewData["UserIsBanned"] = "false";
+            }
+            
 
             if (userAboutMeDataResult != null && userAboutMeDataResult.Count > 0) return View(userAboutMeDataResult);
             else return Redirect("SearchForUser?notFound=true");

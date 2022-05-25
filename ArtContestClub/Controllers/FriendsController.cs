@@ -25,6 +25,7 @@ namespace ArtContestClub.Controllers
 
         public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
         {
+            if (userIdentity == "Support") return "Support";
 
             var person = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
             string result = "Username";

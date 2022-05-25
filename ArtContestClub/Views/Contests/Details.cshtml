@@ -128,6 +128,19 @@
         Skill level: @Html.DisplayFor(model => model.SkillLevel) <br />
         Branch: @Html.DisplayFor(model => model.Branch) <br />
         Owner: <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-id="@Model.UserIdentity">@ViewData[Model.UserIdentity]</a>
+        @if(ViewData["SupportConfirmed"].ToString() == "true")
+        {
+            <br /><br />
+            @if(Model.IsBanned == true)
+            {
+                <a class="btn btn-danger text-white" asp-controller="Support" asp-action="UnbanContest" asp-route-contestId="@Model.Id">Unban contest</a>
+            }
+            else
+            {
+                <a class="btn btn-danger text-white" asp-controller="Support" asp-action="BanContest" asp-route-contestId="@Model.Id">Ban contest</a>
+            }
+            
+        }
     </div>
   </div>
 </div>
@@ -152,6 +165,18 @@
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
+                    @if(ViewData["SupportConfirmed"].ToString() == "true")
+                    {
+                        if(i.IsBanned)
+                        {
+                            <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
+                        }
+                    
+                    }
                 }
                     
             </div>
@@ -178,6 +203,18 @@
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
+                    @if(ViewData["SupportConfirmed"].ToString() == "true")
+                    {
+                        if(i.IsBanned)
+                        {
+                            <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
+                        }
+                    
+                    }
                 }
                     
             </div>
@@ -207,6 +244,18 @@
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
+                    @if(ViewData["SupportConfirmed"].ToString() == "true")
+                    {
+                        if(i.IsBanned)
+                        {
+                            <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
+                        }
+                    
+                    }
                 }
                     
             </div>
@@ -237,7 +286,19 @@
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
                 }
+                @if(ViewData["SupportConfirmed"].ToString() == "true")
+                {
+                    if(i.IsBanned)
+                    {
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
+                    }
                     
+                }
+
             </div>
         </div>
     </center>

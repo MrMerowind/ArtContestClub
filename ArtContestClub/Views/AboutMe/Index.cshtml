@@ -13,10 +13,13 @@
     <div class="card mx-auto" style="width: 50%">
         <div class="card-body">
             <h5 class="card-title">@ViewData[item.UserIdentity].ToString()</h5>
+            <h6 class="card-subtitle mb-2 text-danger">Rank: @ViewData["UserRank"]</h6>
             <h6 class="card-subtitle mb-2 text-muted">@Html.DisplayFor(modelItem => item.Caption)</h6>
             
             <p class="card-text">@Html.DisplayFor(modelItem => item.Bio)</p>
             <a asp-controller="Messages" asp-action="Create" asp-route-messageTo="@item.UserIdentity" class="btn btn-success">Send message</a>
+            <a asp-controller="Contests" asp-action="MyContests" asp-route-userId="@item.UserIdentity" class="btn btn-primary">Created contests</a>
+            <a asp-controller="Contests" asp-action="JoinedContests" asp-route-userId="@item.UserIdentity" class="btn btn-primary">Joined contests</a>
             @if (item.UserIdentity != ViewData["UserIdentity"].ToString())
             {
                 if(ViewData["IsFriend"].ToString() != "true")
@@ -27,6 +30,31 @@
                 {
                     <a class="btn btn-danger" asp-controller="Friends" asp-action="Delete" asp-route-id="@item.UserIdentity">Remove friend</a>
                 }
+                if(ViewData["SupportConfirmed"].ToString() == "true")
+                {
+                    <br /> <br />
+                    <a class="btn btn-warning" asp-controller="Support" asp-action="CreateMessage" asp-route-messageTo="@item.UserIdentity">Send message from support</a>
+                    <br /><br />
+                    @if(ViewData["UserIsBanned"].ToString() == "true")
+                    {
+                        <a class="btn btn-danger text-white" asp-controller="Support" asp-action="UnbanUser" asp-route-userId="@item.UserIdentity">Unban</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger text-white" asp-controller="Support" asp-action="BanUser" asp-route-userId="@item.UserIdentity" asp-route-howLong="1">Ban 24h</a>
+                        <a class="btn btn-danger text-white" asp-controller="Support" asp-action="BanUser" asp-route-userId="@item.UserIdentity" asp-route-howLong="2">Ban 7d</a>
+                        <a class="btn btn-danger text-white" asp-controller="Support" asp-action="BanUser" asp-route-userId="@item.UserIdentity" asp-route-howLong="3">Ban 30d</a>
+                    }
+                    if(ViewData["UserRank"].ToString() == "Mod" && ViewData["ViewerRank"].ToString() == "Admin")
+                    {
+                         <a class="btn btn-danger text-white" asp-controller="Support" asp-action="RemoveMod" asp-route-userId="@item.UserIdentity">Remove mod</a>   
+                    }
+                    else if(ViewData["ViewerRank"].ToString() == "Admin")
+                    {
+                        <a class="btn btn-danger text-white" asp-controller="Support" asp-action="GrantMod" asp-route-userId="@item.UserIdentity">Give mod</a>
+                    }
+
+        }
                     
             }
             @if(item.UserIdentity == ViewData["UserIdentity"].ToString())

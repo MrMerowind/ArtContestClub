@@ -25,6 +25,7 @@ namespace ArtContestClub.Controllers
 
         public string GetUsernameOrEmailFromUserIdentity(string userIdentity)
         {
+            if (userIdentity == "Support") return "Support";
 
             var person = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == userIdentity);
             string result = "Username";
@@ -44,7 +45,44 @@ namespace ArtContestClub.Controllers
             return result;
         }
 
-        // GET: Messages/Create
+        public string GetRank(string userIdentity)
+        {
+            var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
+            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
+            if (personRank == null)
+            {
+                return "User";
+            }
+            else
+            {
+                return personRank.Name;
+            }
+        }
+
+        public int RankToNumber(string rank)
+        {
+            switch (rank)
+            {
+                case "Admin":
+                    return 5;
+                case "Mod":
+                    return 4;
+                case "Premium":
+                    return 3;
+                case "Vip":
+                    return 2;
+                case "User":
+                    return 1;
+                case "Banned":
+                    return 0;
+                default:
+                    return 0;
+            }
+        }
+
         [Authorize]
         public async Task<IActionResult> View(string? messageSend)
         {
@@ -79,6 +117,7 @@ namespace ArtContestClub.Controllers
             return View(result);
         }
 
+        [Authorize]
         public async Task<IActionResult> Support(string? messageTo)
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -89,6 +128,12 @@ namespace ArtContestClub.Controllers
             {
                 ViewData["UserIdentity"] = "User not loged in";
             }
+
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) >= 4)
+            {
+                ViewData["Support"] = "true";
+            }
+            else ViewData["Support"] = "false";
 
             if (messageTo != null)
             {
@@ -117,6 +162,11 @@ namespace ArtContestClub.Controllers
                 ViewData["UserIdentity"] = "User not loged in";
             }
 
+            if(RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 1 && messageTo != "Support")
+            {
+                return RedirectToAction("YouAreBanned", "Ranks");
+            }
+
             if (messageTo != null)
             {
                 if (messageTo.Length > 50)  messageTo = messageTo.Substring(0, 50);
@@ -138,6 +188,15 @@ namespace ArtContestClub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSubmit([Bind("Id,Title,Content,CreatedDate,From,To,IsDeleted")] Message message)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                ViewData["UserIdentity"] = _userManager.GetUserId(User);
+            }
+            else
+            {
+                ViewData["UserIdentity"] = "User not loged in";
+            }
+
             message.CreatedDate = DateTime.Now;
             message.IsDeleted = false;
             message.From = _userManager.GetUserId(User);
@@ -146,6 +205,12 @@ namespace ArtContestClub.Controllers
             if (message.To.Length > 50)  message.To = message.To.Substring(0, 50);
             if (message.Title.Length > 100)  message.Title = message.Title.Substring(0, 100);
             if (message.Content.Length > 500)  message.Content = message.Content.Substring(0, 500);
+
+
+            if (RankToNumber(GetRank(ViewData["UserIdentity"].ToString())) < 1 && message.To != "Support")
+            {
+                return RedirectToAction("YouAreBanned", "Ranks");
+            }
 
             if (true)
             {
