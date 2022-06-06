@@ -84,6 +84,80 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Ranks
+        [Authorize]
+        public async Task<IActionResult> BuyVipMonth()
+        {
+            return View();
+        }
+        [Authorize]
+        public async Task<IActionResult> BuyVipYear()
+        {
+            return View();
+        }
+        [Authorize]
+        public async Task<IActionResult> BuyPremiumMonth()
+        {
+            return View();
+        }
+        [Authorize]
+        public async Task<IActionResult> BuyPremiumYear()
+        {
+            return View();
+        }
+        [Authorize]
+        public async Task<IActionResult> OrderComplete(string? number)
+        {
+            if (number == null) return NotFound();
+            if(number == "1") // Vip30d
+            {
+                _context.Ranks.Add(new Rank()
+                {
+                    Name = "Vip",
+                    CreateTime = DateTime.Now,
+                    Expires = DateTime.Now.AddDays(30),
+                    User = _userManager.GetUserId(User)
+                });
+            }
+            else if(number == "2") // Vip365d
+            {
+                _context.Ranks.Add(new Rank()
+                {
+                    Name = "Vip",
+                    CreateTime = DateTime.Now,
+                    Expires = DateTime.Now.AddDays(365),
+                    User = _userManager.GetUserId(User)
+                });
+            }
+            else if (number == "3") // Premium30d
+            {
+                _context.Ranks.Add(new Rank()
+                {
+                    Name = "Premium",
+                    CreateTime = DateTime.Now,
+                    Expires = DateTime.Now.AddDays(30),
+                    User = _userManager.GetUserId(User)
+                });
+            }
+            else if (number == "4") // Premium365d
+            {
+                _context.Ranks.Add(new Rank()
+                {
+                    Name = "Premium",
+                    CreateTime = DateTime.Now,
+                    Expires = DateTime.Now.AddDays(365),
+                    User = _userManager.GetUserId(User)
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Ranks");
+            return View();
+        }
+
+
+
+
         public async Task<IActionResult> Index()
         {
             string userId = _userManager.GetUserId(User);

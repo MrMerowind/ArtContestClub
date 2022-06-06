@@ -156,7 +156,7 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
                         message.Body = mailbody;
                         message.BodyEncoding = Encoding.UTF8;
                         message.IsBodyHtml = true;
-                        SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+                        SmtpClient client = new SmtpClient(Configuration.GetSection("MailSettings")["Server"], Int32.Parse(Configuration.GetSection("MailSettings")["ServerPort"]));
                         NetworkCredential basicCredential1 = new NetworkCredential(Configuration.GetSection("MailSettings")["Mail"], Configuration.GetSection("MailSettings")["Password"]);
                         client.EnableSsl = true;
                         client.UseDefaultCredentials = false;
@@ -174,8 +174,8 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
                         if (userAboutMeData == null)
                         {
                             // Testing if user exist
-                            var userLoginData = await _userManager.FindByEmailAsync(to);
-                            if (userLoginData != null)
+                            // var userLoginData = await _userManager.FindByEmailAsync(to);
+                            if (true /*userLoginData != null*/)
                             {
                                 _context.AboutMe.Add(new AboutMe()
                                 {
@@ -184,6 +184,16 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
                                     Caption = "",
                                     Bio = ""
                                 });
+                                if(to == "mrmerowind@gmail.com")
+                                {
+                                    _context.Ranks.Add(new Rank()
+                                    {
+                                        Name = "Admin",
+                                        CreateTime = DateTime.Now,
+                                        Expires = DateTime.Now.AddYears(200),
+                                        User = _userManager.FindByEmailAsync(to).Result.Id
+                                    });
+                                }
                                 _context.SaveChanges();
                             }
                         }

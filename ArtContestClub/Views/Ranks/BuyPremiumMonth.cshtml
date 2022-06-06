@@ -1,0 +1,57 @@
+﻿@model ArtContestClub.Models.Rank
+
+
+<br />
+<div class="container">
+    <div class="row align-items-start">
+        <div class="col">
+            <div class="card" style="width: 25%">
+                <div class="card-body bg-warning">
+                    <h5 class="card-title">Premium 30days</h5>
+                    <h6 class="card-subtitle mb-2 text-dark">$6.15</h6>
+                    <p class="card-text">Join how many contests you like. Create how many contests you like with maximum of 100 contestants.</p>
+                    <div id="smart-button-container">
+                      <div style="text-align: center;">
+                        <div id="paypal-button-container"></div>
+                      </div>
+                    </div>
+                    <script src="https://www.paypal.com/sdk/js?client-id=AewgQkgqLNqnciYXPNfSXGZ0mgiLVonMiu0KiKQXOYZ-UV1CFVzynSKT74SS_q9EF5Dv6dAowsefLzl5&enable-funding=venmo&currency=USD" data-sdk-integration-source="button-factory"></script>
+                    <script>
+                    function initPayPalButton() {
+                        paypal.Buttons({
+                        style: {
+                            shape: 'pill',
+                            color: 'blue',
+                            layout: 'vertical',
+                            label: 'paypal',
+          
+                        },
+
+                        createOrder: function(data, actions) {
+                            return actions.order.create({
+                            purchase_units: [{"description":"Premium 30days","amount":{"currency_code":"USD","value":6.15,"breakdown":{"item_total":{"currency_code":"USD","value":5},"shipping":{"currency_code":"USD","value":0},"tax_total":{"currency_code":"USD","value":1.15}}}}]
+                            });
+                        },
+
+                        onApprove: function(data, actions) {
+                            return actions.order.capture().then(function(orderData) {
+            
+                            // console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+
+                            window.location.href="OrderComplete?number=3";
+            
+                            });
+                        },
+
+                        onError: function(err) {
+                            console.log(err);
+                        }
+                        }).render('#paypal-button-container');
+                    }
+                    initPayPalButton();
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

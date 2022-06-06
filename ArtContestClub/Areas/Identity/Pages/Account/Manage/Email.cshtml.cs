@@ -145,7 +145,7 @@ namespace ArtContestClub.Areas.Identity.Pages.Account.Manage
                     message.Body = mailbody;
                     message.BodyEncoding = Encoding.UTF8;
                     message.IsBodyHtml = true;
-                    SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+                    SmtpClient client = new SmtpClient(Configuration.GetSection("MailSettings")["Server"], Int32.Parse(Configuration.GetSection("MailSettings")["ServerPort"]));
                     NetworkCredential basicCredential1 = new NetworkCredential(Configuration.GetSection("MailSettings")["Mail"], Configuration.GetSection("MailSettings")["Password"]);
                     client.EnableSsl = true;
                     client.UseDefaultCredentials = false;

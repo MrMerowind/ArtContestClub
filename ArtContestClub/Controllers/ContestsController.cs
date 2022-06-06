@@ -48,18 +48,25 @@ namespace ArtContestClub.Controllers
 
         public string GetRank(string userIdentity)
         {
-            var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
-            if (personRank == null)
+            if (_context.Ranks != null)
             {
-                return "User";
+                var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
+                if (personRank == null)
+                {
+                    return "User";
+                }
+                else
+                {
+                    return personRank.Name;
+                }
             }
             else
             {
-                return personRank.Name;
+                return "User";
             }
         }
 
@@ -216,7 +223,6 @@ namespace ArtContestClub.Controllers
                 }
             return View(result);
         }
-
         public IActionResult SearchContest()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -252,7 +258,12 @@ namespace ArtContestClub.Controllers
 
             if (Title != "")
             {
-                searchResult = searchResult.Where(p => p.Title.Contains(Title));
+                var arr = Title.Split(' ');
+
+                foreach (var word in arr)
+                {
+                    searchResult = searchResult.Where(a => a.Title.ToLower().Contains(word.ToLower()));
+                }
             }
 
             switch (SkillLevel)
@@ -477,7 +488,7 @@ namespace ArtContestClub.Controllers
             }
 
             contest.ContestParticipants = await _context.ContestParticipants
-                .Where(p => p.UserIdentity == _userManager.GetUserId(User) && p.ContestId == id).ToListAsync();
+                .Where(p => p.UserIdentity == ViewData["UserIdentity"].ToString() && p.ContestId == id).ToListAsync();
 
             contest.ContestSubmissions = await _context.ContestSubmissions.Where(p => p.ContestId == id && p.IsDeleted == false
             && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)) || rank >= 4)).ToListAsync();

@@ -47,18 +47,25 @@ namespace ArtContestClub.Controllers
 
         public string GetRank(string userIdentity)
         {
-            var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
-            if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
-            if (personRank == null)
+            if (_context.Ranks != null)
             {
-                return "User";
+                var personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Admin");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Mod");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Banned");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Premium");
+                if (personRank == null) personRank = _context.Ranks.FirstOrDefault(p => p.User == userIdentity && p.Expires > DateTime.Now && p.Name == "Vip");
+                if (personRank == null)
+                {
+                    return "User";
+                }
+                else
+                {
+                    return personRank.Name;
+                }
             }
             else
             {
-                return personRank.Name;
+                return "User";
             }
         }
 
@@ -99,11 +106,11 @@ namespace ArtContestClub.Controllers
             {
                 if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    id = _userManager.GetUserId(User);
+                    id = ViewData["UserIdentity"].ToString();
                 }
                 else
                 {
-                    return Redirect("SearchForUsers");
+                    return RedirectToAction("SearchForUser", "AboutMe");
                 }
             }
 
@@ -122,7 +129,7 @@ namespace ArtContestClub.Controllers
 
 
             var userFriend = await _context.Friends
-                .FirstOrDefaultAsync(p => p.UserIdentity == _userManager.GetUserId(User) && p.FriendIdentity == id);
+                .FirstOrDefaultAsync(p => p.UserIdentity == ViewData["UserIdentity"].ToString() && p.FriendIdentity == id);
             if (userFriend == null)
             {
                 ViewData["IsFriend"] = "false";
@@ -152,7 +159,6 @@ namespace ArtContestClub.Controllers
 
 
         }
-
         public async Task<IActionResult> SearchForUser(string? notFound)
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -173,7 +179,6 @@ namespace ArtContestClub.Controllers
             }
             return View();
         }
-
         public async Task<IActionResult> SearchForUserConfirm(string UserIdentity)
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -189,33 +194,43 @@ namespace ArtContestClub.Controllers
                 return Redirect("~Home/Index");
             }
 
+            if(UserIdentity != null && UserIdentity != "")
             if (UserIdentity.Length > 50)  UserIdentity = UserIdentity.Substring(0, 50);
 
             /// TU NIE DZIAŁA
-            var aboutMe = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == UserIdentity);
-            string aboutMeResultId = "NotFound";
-            if(aboutMe == null)
+            if(_context.AboutMe == null)
             {
-                var userForUserManager = _userManager.Users.FirstOrDefault(p => p.Email == UserIdentity);
-                if(userForUserManager != null)
-                {
-                    aboutMe = await _context.AboutMe
-                        .FirstOrDefaultAsync(p => p.UserIdentity == userForUserManager.Id);
-                    aboutMeResultId = aboutMe.UserIdentity;
-                }
+                return Redirect("SearchForUser?notFound=true");
+                
             }
             else
             {
-                aboutMeResultId = aboutMe.UserIdentity;
-            }
-            // DOTONT
+                var aboutMe = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == UserIdentity);
+                string aboutMeResultId = "NotFound";
+                if (aboutMe == null)
+                {
+                    var userForUserManager = _userManager.Users.FirstOrDefault(p => p.Email == UserIdentity);
+                    if (userForUserManager != null)
+                    {
+                        aboutMe = await _context.AboutMe
+                            .FirstOrDefaultAsync(p => p.UserIdentity == userForUserManager.Id);
+                        aboutMeResultId = aboutMe.UserIdentity;
+                    }
+                }
+                else
+                {
+                    aboutMeResultId = aboutMe.UserIdentity;
+                }
+                // DOTONT
 
 
-            if (aboutMe == null)
-            {
-                return Redirect("SearchForUser?notFound=true");
+                if (aboutMe == null)
+                {
+                    return Redirect("SearchForUser?notFound=true");
+                }
+                return Redirect("Index?id=" + aboutMeResultId);
             }
-            return Redirect("Index?id=" + aboutMeResultId);
+            
         }
 
         // GET: AboutMe/Edit/5

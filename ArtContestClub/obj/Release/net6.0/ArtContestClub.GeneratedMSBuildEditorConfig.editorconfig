@@ -175,6 +175,18 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/ArtContestClubGit/ArtContestClub/Views/AboutMe/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWJvdXRNZVxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/AboutMe/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWJvdXRNZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/AboutMe/SearchForUser.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWJvdXRNZVxTZWFyY2hGb3JVc2VyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/ArtContestClubGit/ArtContestClub/Views/Contests/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVzdHNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -187,12 +199,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVzdHNcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/ArtContestClubGit/ArtContestClub/Views/Contests/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVzdHNcRWRpdC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/ArtContestClubGit/ArtContestClub/Views/Contests/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVzdHNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Contests/JoinedContests.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVzdHNcSm9pbmVkQ29udGVzdHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/ArtContestClubGit/ArtContestClub/Views/Contests/MyContests.cshtml]
@@ -207,8 +219,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGVzdHNcU3VibWl0QXJ0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/ArtContestClubGit/ArtContestClub/Views/Friends/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRnJpZW5kc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/ArtContestClubGit/ArtContestClub/Views/Home/ConfirmEmail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb25maXJtRW1haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Home/Cookies.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb29raWVzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/ArtContestClubGit/ArtContestClub/Views/Home/Index.cshtml]
@@ -217,6 +237,50 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/ArtContestClubGit/ArtContestClub/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Messages/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Messages/Support.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZXNcU3VwcG9ydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Messages/View.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZXNcVmlldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/BuyPremiumMonth.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcQnV5UHJlbWl1bU1vbnRoLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/BuyPremiumYear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcQnV5UHJlbWl1bVllYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/BuyVipMonth.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcQnV5VmlwTW9udGguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/BuyVipYear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcQnV5VmlwWWVhci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/OrderComplete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcT3JkZXJDb21wbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Ranks/YouAreBanned.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFua3NcWW91QXJlQmFubmVkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/ArtContestClubGit/ArtContestClub/Views/Shared/Error.cshtml]
@@ -229,6 +293,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/ArtContestClubGit/ArtContestClub/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Support/CreateMessage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VwcG9ydFxDcmVhdGVNZXNzYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ArtContestClubGit/ArtContestClub/Views/Support/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VwcG9ydFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/ArtContestClubGit/ArtContestClub/Views/_ViewImports.cshtml]
