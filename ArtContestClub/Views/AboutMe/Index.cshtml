@@ -11,7 +11,7 @@
     if (item.Caption == "" || item.Caption == null) item.Caption = "Empty caption";
     if (item.Bio == "" || item.Bio == null) item.Bio = "Empty bio";
     <br />
-    <div class="card mx-auto" style="width: 50%">
+    <div class="card mx-auto" style="width: 100%">
         <div class="card-body">
             <h5 class="card-title">@ViewData[item.UserIdentity].ToString()</h5>
             <h6 class="card-subtitle mb-2 text-danger">Rank: @ViewData["UserRank"]</h6>

@@ -144,7 +144,7 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
 
                     if(true) // sending email for verification
                     {
-                        string from = Configuration.GetSection("MailSettings")["Mail"];
+                        string from = Configuration.GetSection("MailSettings")["From"];
                         string to = Input.Email;
 
                         MailMessage message = new MailMessage(from, to);
@@ -161,6 +161,7 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
                         client.EnableSsl = true;
                         client.UseDefaultCredentials = false;
                         client.Credentials = basicCredential1;
+                        bool mailSend = true;
                         try
                         {
                             client.Send(message);
@@ -168,7 +169,7 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
 
                         catch (Exception ex)
                         {
-                            throw ex;
+                            mailSend = false;
                         }
                         var userAboutMeData = _context.AboutMe.FirstOrDefault(p => p.UserIdentity == _userManager.FindByEmailAsync(to).Result.Id);
                         if (userAboutMeData == null)
@@ -197,7 +198,15 @@ namespace ArtContestClub.Areas.Identity.Pages.Account
                                 _context.SaveChanges();
                             }
                         }
-                        return RedirectToAction("ConfirmEmail", "Home");
+                        if(mailSend)
+                        {
+                            return RedirectToAction("ConfirmEmail", "Home");
+                        }
+                        else
+                        {
+                            return RedirectToAction("ConfirmEmailFailed", "Home");
+                        }
+                        
                     }
 
                 }

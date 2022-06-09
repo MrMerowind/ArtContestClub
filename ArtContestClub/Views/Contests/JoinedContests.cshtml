@@ -55,7 +55,7 @@
                         if (item.ContestSubmissions.First() == sub)
                         {
                             <div class="carousel-item active">
-                                <img src="@sub.ArtLink" class="d-block mx-auto" alt="@sub.Title" style="max-height: 600px; width: auto;">
+                                <img src="@sub.ArtLink" class="d-block mx-auto" alt="@sub.Title" style="max-height: 1600px; width: 100%; height: auto">
                                 <div class="carousel-caption d-none d-md-block bg-info p-2">
                                     <h5>Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-id="@sub.UserIdentity">@ViewData[sub.UserIdentity].ToString()</a></h5>
                                 </div>
@@ -64,7 +64,7 @@
                         else
                         {
                             <div class="carousel-item">
-                                <img loading="lazy" src="@sub.ArtLink" class="d-block mx-auto" alt="@sub.Title" style="max-height: 600px; width: auto;">
+                                <img loading="lazy" src="@sub.ArtLink" class="d-block mx-auto" alt="@sub.Title" style="max-height: 1600px; width: 100%; height: auto">
                                 <div class="carousel-caption d-none d-md-block bg-info p-2">
                                     <h5>Submitted by <a class="text-white" asp-controller="AboutMe" asp-action="Index" asp-route-id="@sub.UserIdentity">@ViewData[sub.UserIdentity].ToString()</a></h5>
                                 </div>

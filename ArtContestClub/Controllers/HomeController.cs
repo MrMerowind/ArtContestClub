@@ -36,6 +36,11 @@ namespace ArtContestClub.Controllers
             return View();
         }
 
+        public IActionResult ConfirmEmailFailed()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

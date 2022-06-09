@@ -144,9 +144,9 @@ namespace ArtContestClub.Controllers
 
             int rank = RankToNumber(GetRank(ViewData["UserIdentity"].ToString()));
 
-            if (userId == null || userId == "my") userId = _userManager.GetUserId(User);
+            if (userId == null || userId == "my") userId = ViewData["UserIdentity"].ToString();
 
-            var contests = _context.Contests.Where(p => p.UserIdentity == userId && p.IsDeleted == false).ToList();
+            var contests = _context.Contests.Where(p => p.UserIdentity == userId && p.IsDeleted == false).OrderByDescending(p => p.Created).ToList();
             if(rank < 4)
             {
                 foreach (var c in contests)
@@ -203,7 +203,9 @@ namespace ArtContestClub.Controllers
             
             var result = await _context.Contests
                 .Where(p => joinedContests.Contains(p.Id))
-                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)) || rank >= 4)).ToListAsync();
+                .Where(p => p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == ViewData["UserIdentity"].ToString()) || rank >= 4))
+                .OrderByDescending(p => p.Created)
+                .ToListAsync();
 
             foreach (var c in result)
             {
@@ -349,7 +351,8 @@ namespace ArtContestClub.Controllers
 
             searchResult = searchResult.Where(p => p.IsDeleted == false);
 
-            searchResult = searchResult.Where(p => p.IsBanned == false|| (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)) || rank >= 4);
+            searchResult = searchResult.Where(p => p.IsBanned == false|| (p.IsBanned == true && p.UserIdentity == ViewData["UserIdentity"].ToString()) || rank >= 4)
+                .OrderByDescending(p => p.Created);
 
             searchResult = searchResult.Skip(20 * page);
             
@@ -358,7 +361,7 @@ namespace ArtContestClub.Controllers
             foreach (var c in result)
             {
                 c.ContestSubmissions = await _context.ContestSubmissions
-                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == _userManager.GetUserId(User)))).ToListAsync();
+                    .Where(p => p.ContestId == c.Id && p.IsDeleted == false && (p.IsBanned == false || (p.IsBanned == true && p.UserIdentity == ViewData["UserIdentity"].ToString()))).ToListAsync();
             }
 
             if (result != null)

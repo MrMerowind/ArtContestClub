@@ -30,7 +30,7 @@
     </header>
     <div class="container-fluid mt-0">
         <div class="row">
-            <div class="col-lg-2 col-sm-3 bg-dark" style="min-height: 100vh">
+            <div class="col-2 bg-dark" style="min-height: 100vh">
                 <div class="d-grid gap-2 pb-2 pt-2">
                     <a class="btn btn-warning text-black" role="button" asp-controller="Contests" asp-action="SearchContest">Find contest</a>
                     <a class="btn btn-warning text-black" role="button" asp-controller="AboutMe" asp-action="SearchForUser">Find user</a>
@@ -43,9 +43,10 @@
                     <a class="btn btn-success text-white" role="button" asp-controller="Messages" asp-action="Create" asp-route-messageTo="">Create message</a>
                     <a class="btn btn-success text-white" role="button" asp-controller="Messages" asp-action="View" asp-route-messageTo="">My messages</a>
                     <a class="btn btn-danger text-white" role="button" asp-controller="Messages" asp-action="Support" asp-route-messageTo="">Support</a>
+                    <a class="btn btn-warning text-black" asp-area="Identity" asp-page="/Account/Manage/Email" title="Manage">Account settings</a>
                 </div>
             </div>
-            <div class="col-lg-10 col-sm-9">
+            <div class="col-10">
                 <main role="main" class="pb-3">
                     @RenderBody()
                 </main>
