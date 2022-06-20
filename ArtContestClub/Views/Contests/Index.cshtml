@@ -49,7 +49,7 @@
                     @Html.DisplayFor(modelItem => item.Title)
                 </h1>
             </div>
-            <div id="@("carouselId" + item.Id)" class="carousel slide mx-auto" style="width: 50%" data-bs-ride="false">
+            <div id="@("carouselId" + item.Id)" class="carousel slide mx-auto" style="width: 50%" data-bs-interval="false">
                 <div class="carousel-inner bg-dark">
                     @foreach(var sub in item.ContestSubmissions)
                     {    

@@ -165,18 +165,18 @@
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
-                    @if(ViewData["SupportConfirmed"].ToString() == "true")
+                }
+                @if(ViewData["SupportConfirmed"].ToString() == "true")
+                {
+                    if(i.IsBanned)
                     {
-                        if(i.IsBanned)
-                        {
-                            <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
-                        }
-                        else
-                        {
-                            <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
-                        }
-                    
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
                     }
+                    else
+                    {
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
+                    }
+                    
                 }
                     
             </div>
@@ -203,20 +203,20 @@
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
-                    @if(ViewData["SupportConfirmed"].ToString() == "true")
-                    {
-                        if(i.IsBanned)
-                        {
-                            <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
-                        }
-                        else
-                        {
-                            <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
-                        }
                     
-                    }
                 }
+                @if(ViewData["SupportConfirmed"].ToString() == "true")
+                {
+                    if(i.IsBanned)
+                    {
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
+                    }
                     
+                }    
             </div>
         </div>
     </center>
@@ -244,20 +244,20 @@
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="1" asp-route-placeUserIdentity="@i.UserIdentity">First place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="2" asp-route-placeUserIdentity="@i.UserIdentity">Second place</a>
                     <a class="btn btn-success" asp-controller="Contests" asp-action="SetPlace" asp-route-id="@Model.Id" asp-route-place="3" asp-route-placeUserIdentity="@i.UserIdentity">Third place</a>
-                    @if(ViewData["SupportConfirmed"].ToString() == "true")
-                    {
-                        if(i.IsBanned)
-                        {
-                            <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
-                        }
-                        else
-                        {
-                            <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
-                        }
                     
-                    }
                 }
+                @if(ViewData["SupportConfirmed"].ToString() == "true")
+                {
+                    if(i.IsBanned)
+                    {
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="UnbanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Unban submission</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger" asp-controller="Support" asp-action="BanSubmission" asp-route-id="@i.Id" asp-route-contestId="@Model.Id">Ban submission</a>
+                    }
                     
+                }    
             </div>
         </div>
     </center>

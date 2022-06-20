@@ -6,13 +6,13 @@
 @if (SignInManager.IsSignedIn(User))
 {   
     <li class="nav-item">
-        <a class="btn btn-danger" asp-controller="Ranks" asp-action="Index">Rank</a>
+        <a class="btn btn-danger mx-3" asp-controller="Ranks" asp-action="Index">Rank</a>
     </li>
     <li class="nav-item">
         <a class="btn btn-outline-primary mx-3" asp-controller="AboutMe" asp-action="Index" title="Manage">@User.Identity?.Name</a>
     </li>
     <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+        <form  class="form-inline mx-3" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
             <button  type="submit" class="nav-link btn btn-link text-white">Logout</button>
         </form>
     </li>

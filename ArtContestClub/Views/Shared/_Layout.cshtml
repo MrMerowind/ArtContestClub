@@ -10,6 +10,21 @@
 </head>
 <body>
     <header>
+        <div id="cookieNotice" class="light display-right" style="display: none;">
+            <div id="closeIcon" style="display: none;">
+            </div>
+            <div class="title-wrap">
+                <h4>Cookie Consent</h4>
+            </div>
+            <div class="content-wrap">
+                <div class="msg-wrap">
+                    <p>This website uses cookies or similar technologies, to enhance your browsing experience and provide personalized recommendations. By continuing to use our website, you agree to our  <a style="color:#115cfa;" asp-controller="Home" asp-action="Privacy" >Privacy Policy</a></p>
+                    <div class="btn-wrap">
+                        <button class="btn-primary" onclick="acceptCookieConsent();">Accept</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark text-white box-shadow mb-0">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ArtContest.club</a>
@@ -30,7 +45,7 @@
     </header>
     <div class="container-fluid mt-0">
         <div class="row">
-            <div class="col-2 bg-dark" style="min-height: 100vh">
+            <div class="col-md-2 col-xs-3 bg-dark" style="min-height: 100%">
                 <div class="d-grid gap-2 pb-2 pt-2">
                     <a class="btn btn-warning text-black" role="button" asp-controller="Contests" asp-action="SearchContest">Find contest</a>
                     <a class="btn btn-warning text-black" role="button" asp-controller="AboutMe" asp-action="SearchForUser">Find user</a>
@@ -46,7 +61,7 @@
                     <a class="btn btn-warning text-black" asp-area="Identity" asp-page="/Account/Manage/Email" title="Manage">Account settings</a>
                 </div>
             </div>
-            <div class="col-10">
+            <div class="col-md-10 col-xs-9">
                 <main role="main" class="pb-3">
                     @RenderBody()
                 </main>
@@ -60,6 +75,51 @@
             &copy; 2022 - ArtContest.club - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    <script>
+        // Create cookie
+        function setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            let expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        // Delete cookie
+        function deleteCookie(cname) {
+            const d = new Date();
+            d.setTime(d.getTime() + (24*60*60*1000));
+            let expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=;" + expires + ";path=/";
+        }
+
+        // Read cookie
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+        function acceptCookieConsent(){
+            deleteCookie('user_cookie_consent');
+            setCookie('user_cookie_consent', 1, 30);
+            document.getElementById("cookieNotice").style.display = "none";
+        }
+        let cookie_consent = getCookie("user_cookie_consent");
+        if(cookie_consent != ""){
+            document.getElementById("cookieNotice").style.display = "none";
+        }else{
+            document.getElementById("cookieNotice").style.display = "block";
+        }
+    </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

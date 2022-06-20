@@ -107,8 +107,8 @@ namespace ArtContestClub.Controllers
         [Authorize]
         public async Task<IActionResult> OrderComplete(string? number)
         {
-            if (number == null) return NotFound();
-            if(number == "1") // Vip30d
+            if (number == null) return RedirectToAction("Index", "Ranks");
+            if (number == "444048") // Vip30d
             {
                 _context.Ranks.Add(new Rank()
                 {
@@ -118,7 +118,7 @@ namespace ArtContestClub.Controllers
                     User = _userManager.GetUserId(User)
                 });
             }
-            else if(number == "2") // Vip365d
+            else if(number == "716154") // Vip365d
             {
                 _context.Ranks.Add(new Rank()
                 {
@@ -128,7 +128,7 @@ namespace ArtContestClub.Controllers
                     User = _userManager.GetUserId(User)
                 });
             }
-            else if (number == "3") // Premium30d
+            else if (number == "351914") // Premium30d
             {
                 _context.Ranks.Add(new Rank()
                 {
@@ -138,7 +138,7 @@ namespace ArtContestClub.Controllers
                     User = _userManager.GetUserId(User)
                 });
             }
-            else if (number == "4") // Premium365d
+            else if (number == "892290") // Premium365d
             {
                 _context.Ranks.Add(new Rank()
                 {
@@ -147,17 +147,20 @@ namespace ArtContestClub.Controllers
                     Expires = DateTime.Now.AddDays(365),
                     User = _userManager.GetUserId(User)
                 });
+            }
+            else if (number == "0") // Order complete
+            {
+                return RedirectToAction("Index", "Ranks");
             }
 
             await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Ranks");
             return View();
+            
         }
 
 
 
-
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             string userId = _userManager.GetUserId(User);
@@ -172,7 +175,7 @@ namespace ArtContestClub.Controllers
                 ViewData["CreateRank"] = "false";
             }
 
-            var ranks = await _context.Ranks.Where(p => p.User == userId).ToListAsync();
+            var ranks = await _context.Ranks.Where(p => p.User == userId).OrderByDescending(p => p.Expires).ToListAsync();
 
 
             return View(ranks);
@@ -203,6 +206,7 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Ranks/Create
+        [Authorize]
         public IActionResult Create()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -222,6 +226,7 @@ namespace ArtContestClub.Controllers
         // POST: Ranks/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,CreateTime,Expires,User")] Rank rank)
@@ -249,8 +254,12 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Ranks/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
+            // Temporary disable
+            return RedirectToAction(nameof(Index));
+
             if (id == null || _context.Ranks == null)
             {
                 return NotFound();
@@ -267,10 +276,14 @@ namespace ArtContestClub.Controllers
         // POST: Ranks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CreateTime,Expires,User")] Rank rank)
         {
+            // Temporary disable
+            return RedirectToAction(nameof(Index));
+
             if (id != rank.Id)
             {
                 return NotFound();
@@ -300,8 +313,12 @@ namespace ArtContestClub.Controllers
         }
 
         // GET: Ranks/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
+            // Temporary disable
+            return RedirectToAction(nameof(Index));
+
             if (id == null || _context.Ranks == null)
             {
                 return NotFound();
@@ -322,6 +339,9 @@ namespace ArtContestClub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Temporary disable
+            return RedirectToAction(nameof(Index));
+
             if (_context.Ranks == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Ranks'  is null.");
